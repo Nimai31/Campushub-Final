@@ -15,6 +15,10 @@ const Header = (props) => {
   const handleCampuHubClick = () => {
     navigate("/home");
   };
+
+  const handleProjectClick = () => {
+    navigate("/procollab")
+  }
   return (
     <Container>
       <Content>
@@ -47,7 +51,7 @@ const Header = (props) => {
               </a>
             </NavList>
 
-            <NavList>
+            <NavList  onClick={handleProjectClick}>
               <a>
                 <img
                   src="/images/nav-project-colab.svg"

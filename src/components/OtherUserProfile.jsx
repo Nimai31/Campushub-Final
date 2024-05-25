@@ -1,36 +1,38 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import { fetchUserDetailsByEmail } from "../actions"; // Assuming you have an action to fetch user details by email
 import { connect } from "react-redux";
-import { Navigate } from "react-router-dom";
-import UserDetailsModal from "./UserDetailsModal";
-import { fetchUserDetails } from "../actions";
 
-const Profile = (props) => {
-  const [showModal, setShowModal] = useState(false);
+
+const otherUserProfile = (props) => {
+  const { email } = useParams();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (props.user) {
-      props.fetchUserDetails(props.user.email);
+    if (email) {
+      props.fetchUserDetailsByEmail(email).then(() => setLoading(false));
     }
-  }, [props.user]);
+  }, [email]);
 
-  const toggleModal = () => {
-    setShowModal(!showModal);
-  };
+  
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Container>
-      {!props.user && <Navigate to="/" />}
       <ProfileCard>
         <div>
-          {props.user && props.user.photoURL ? (
-            <img src={props.user.photoURL} alt="User" />
+          {props.userDetails && props.userDetails.image ? (
+            <img src={props.userDetails.image} alt="User" />
           ) : (
             <img src="/images/user.svg" alt=" " />
           )}
           <UserInfo>
-            <h2>{props.user ? props.user.displayName : "User Name"}</h2>
-            <p>{props.user ? props.user.email : "user@example.com"}</p>
+            <h2>{ props.userDetails.username  }</h2>
+            <p>{ email }</p>
             <h3>{props.userDetails.headline}</h3>
             <h3>{props.userDetails.branch}</h3>
             <h3>{props.userDetails.semester}</h3>
@@ -43,9 +45,6 @@ const Profile = (props) => {
             )}
           </UserInfo>
         </div>
-        <ProfileActions>
-          <button onClick={toggleModal}>Edit Profile</button>
-        </ProfileActions>
       </ProfileCard>
       <ProfileCard>
         <div>Certificates</div>
@@ -53,10 +52,6 @@ const Profile = (props) => {
       <ProfileCard>
         <div>Skills</div>
       </ProfileCard>
-      <UserDetailsModal
-        showModal={showModal ? "open" : "close"}
-        handleClick={toggleModal}
-      />
     </Container>
   );
 };
@@ -125,33 +120,15 @@ const UserInfo = styled.div`
   }
 `;
 
-const ProfileActions = styled.div`
-  margin-top: 20px;
-
-  button {
-    margin: 0 10px;
-    padding: 10px 20px;
-    color: #001838;
-    background-color: #fff;
-    border: 1px solid #001838;
-    border-radius: 20px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #f0f0f0;
-    }
-  }
-`;
-
 const mapStateToProps = (state) => {
   return {
-    user: state.userState.user,
     userDetails: state.userState.userDetails,
   };
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchUserDetails: (email) => dispatch(fetchUserDetails(email)),
+  fetchUserDetailsByEmail: (email) => dispatch(fetchUserDetailsByEmail(email)),
+  getArticles: () => dispatch(getArticlesAPI()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Profile);
+export default connect(mapStateToProps, mapDispatchToProps)(otherUserProfile);

@@ -4,8 +4,11 @@ import PostModal from "./PostModal";
 import { connect } from "react-redux";
 import { getArticlesAPI } from "../actions";
 import ReactPlayer from "react-player";
+import { useNavigate } from "react-router-dom";
+
 const Main = (props) => {
   const [showModal, setShowModal] = useState("close");
+  const navigate = useNavigate();
 
   useEffect(() => {
     props.getArticles();
@@ -28,6 +31,11 @@ const Main = (props) => {
         setShowModal("close");
     }
   };
+
+  const handleUserClick = (email) => {
+    navigate(`/user/${email}`);
+  };
+
   return (
     <>
       {props.articles.length === 0 ? (
@@ -37,9 +45,9 @@ const Main = (props) => {
           <Sharebox>
             <div>
               {props.user && props.user.photoURL ? (
-                <img src={props.user.photoURL} />
+                <img src={props.user.photoURL} alt="User" />
               ) : (
-                <img src="/images/user.svg" alt=" " />
+                <img src="/images/user.svg" alt="User" />
               )}
               <button
                 onClick={handleClick}
@@ -76,7 +84,7 @@ const Main = (props) => {
               props.articles.map((article, key) => (
                 <Article key={key}>
                   <SharedActor>
-                    <a>
+                    <a onClick={() => handleUserClick(article.actor.description)}>
                       <img src={article.actor.image} alt="" />
                       <div>
                         <span>{article.actor.title}</span>
@@ -240,6 +248,7 @@ const SharedActor = styled.div`
     overflow: hidden;
     display: flex;
     text-decoration: none;
+    cursor: pointer;
 
     img {
       width: 48px;
@@ -337,21 +346,18 @@ const SocialCounts = styled.ul`
 const SocialActions = styled.div`
   align-items: center;
   display: flex;
+  justify-content: flex-start;
   margin: 0;
   min-height: 40px;
   padding: 4px 8px;
+
   button {
     display: inline-flex;
     align-items: center;
     padding: 8px;
     color: #001838;
+    background: #98c5e9;
     border: none;
-    background-color: #98c5e9;
-
-    img {
-      height: 30px;
-      padding-right: 2px;
-    }
 
     @media (min-width: 768px) {
       span {
@@ -363,6 +369,7 @@ const SocialActions = styled.div`
 
 const Content = styled.div`
   text-align: center;
+
   & > img {
     width: 30px;
   }

@@ -162,3 +162,42 @@ export const updateUserDetailsAPI = (email, details) => {
       });
   };
 };
+
+export const fetchUserDetailsByEmail = (email) => {
+  return async (dispatch) => {
+    try {
+      let userDetails = {};
+
+      // Fetch user details from the "users" collection
+      await db.collection("users")
+        .doc(email)
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            userDetails = { ...userDetails, ...doc.data() };
+          } else {
+            console.error("No such document in users collection!");
+          }
+        });
+
+      // Fetch user details from the "articles" collection
+      await db.collection("articles")
+        .where("actor.description", "==", email)
+        .limit(1)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            userDetails.image = doc.data().actor.image; // Assuming the image is stored in the actor field
+            userDetails.username = doc.data().actor.title;
+          });
+        });
+
+      dispatch({
+        type: 'SET_USER_DETAILS',
+        payload: userDetails,
+      });
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
+};

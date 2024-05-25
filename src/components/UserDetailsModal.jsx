@@ -1,7 +1,8 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import { updateUserDetailsAPI } from "../actions";
+import { fetchUserDetails } from "../actions";
 
 const UserDetailsModal = (props) => {
   const [headline, setHeadline] = useState("");
@@ -12,18 +13,40 @@ const UserDetailsModal = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const userEmail = props.user.email; // Use user email
+    const userEmail = props.user.email; 
     const userDetails = { headline, branch, semester, links };
 
     props.updateUserDetails(userEmail, userDetails);
     reset(e);
   };
 
+  useEffect(() => {
+    if (props.user) {
+      props.fetchUserDetails(props.user.email);
+    }
+  }, [props.user]);
+
+  useEffect(() => {
+    if (props.userDetails) {
+      setHeadline(props.userDetails.headline || "");
+      setBranch(props.userDetails.branch || "");
+      setSemester(props.userDetails.semester || "");
+      setLinks(props.userDetails.links || "");
+    }
+  }, [props.userDetails]);
+
   const reset = (e) => {
-    setHeadline("");
-    setBranch("");
-    setSemester("");
-    setLinks("");
+    if (!props.user.email) {
+      setHeadline("");
+      setBranch("");
+      setSemester("");
+      setLinks("");
+    } else {
+      setHeadline(props.userDetails.headline);
+      setBranch(props.userDetails.branch);
+      setSemester(props.userDetails.semester);
+      setLinks(props.userDetails.links);
+    }
     props.handleClick(e);
   };
 
@@ -183,12 +206,14 @@ const SubmitButton = styled.button`
 const mapStateToProps = (state) => {
   return {
     user: state.userState.user,
+    userDetails: state.userState.userDetails,
   };
 };
 
 const mapDispatchToProps = (dispatch) => ({
   updateUserDetails: (email, details) =>
     dispatch(updateUserDetailsAPI(email, details)),
+  fetchUserDetails: (email) => dispatch(fetchUserDetails(email)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserDetailsModal);

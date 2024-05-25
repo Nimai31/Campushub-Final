@@ -1,55 +1,55 @@
 import styled from "styled-components";
 import { connect } from "react-redux";
 import { signInAPI } from "../actions";
-import React from "react";
 import { Navigate } from "react-router-dom";
 
 const Login = (props) => {
-    return (
-        <Container>
-          {props.user && <Navigate to="/home" />}
-            <Nav>
-                <a href="/">
-                    <img src="/images/symbol1.svg" alt="" />
-                </a>
-                <div>
-                    <Join>Join now</Join>
-                    <SignIn>Sign in</SignIn>
-                </div>
-            </Nav>
-            <Section>
-                <Hero>
-                    <h1>Welcome to your college community</h1>
-                    <img src="/images/login-hero.svg" alt="" />
-                </Hero>
-                <Form>
-                    <Google onClick={() => props.signIn()}>
-                        <img src="/images/google.svg" alt="" />
-                        Sign in with Google
-                    </Google>
-                </Form>
-            </Section>
-        </Container>
-    )
-};  
-const Container =styled.div`
-padding: 0px;
+  return (
+    <Container>
+      {props.user && <Navigate to="home" />}
+      <Nav>
+        <a href="/">
+          <img src="/images/campushub-logo1.svg" alt="" />
+        </a>
+        <div>
+          <Join>Join now</Join>
+          <SignIn>Sign in</SignIn>
+        </div>
+      </Nav>
+      <Section>
+        <Hero>
+          <h1>WELCOME TO YOUR COLLEGE COMMUNITY</h1>
+          <img src="images/trial1.svg" alt="" />
+        </Hero>
+        <Form>
+          <Google onClick={() => props.signIn()}>
+            <img src="/images/google.svg" alt="" />
+            Sign in with Google
+          </Google>
+        </Form>
+      </Section>
+    </Container>
+  );
+};
+
+const Container = styled.div`
+  padding: 0px;
 `;
 
-const Nav = styled.nav`
+const Nav = styled.div`
   max-width: 1128px;
   margin: auto;
   padding: 12px 0 16px;
   display: flex;
-  align-items: center;
   position: relative;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: nowrap;
 
   & > a {
-    width: 350px;
-    height: 150px;
-    padding-top:35px;
+    width: 135px;
+    height: 34px;
+    padding-top: 20px;
     @media (max-width: 768px) {
       padding: 0 5px;
     }
@@ -57,33 +57,34 @@ const Nav = styled.nav`
 `;
 
 const Join = styled.a`
-  font-size: 20px;
+  font-size: 16px;
   padding: 10px 12px;
   text-decoration: none;
   border-radius: 4px;
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(0, 24, 56, 0.7);
   margin-right: 12px;
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.08);
-    color: rgba(0, 0, 0, 0.9);
+    color: rgba(0, 24, 56);
     text-decoration: none;
   }
 `;
 
 const SignIn = styled.a`
-  box-shadow: inset 0 0 0 1px #6a1910;
-  color: #6a1910;
+  box-shadow: inset 0 0 0 1px #001838;
+  color: #001838;
   border-radius: 24px;
-  transition-duration: 167ms;
-  font-size: 20px;
+  transition-duration: 150ms;
+  font-size: 16px;
   font-weight: 600;
-  line-height: 20px;
+  line-height: 40px;
   padding: 10px 24px;
   text-align: center;
   background-color: rgba(0, 0, 0, 0);
+
   &:hover {
-    background-color: #f7e9e8;
-    color: #e7bfba;
+    background-color: #98c5e9;
     text-decoration: none;
   }
 `;
@@ -94,7 +95,7 @@ const Section = styled.section`
   min-height: 700px;
   padding-bottom: 138px;
   padding-top: 40px;
-  padding: 60px 0;
+  padding: 60px 0px;
   position: relative;
   flex-wrap: wrap;
   width: 100%;
@@ -114,10 +115,12 @@ const Hero = styled.div`
     padding-bottom: 0;
     width: 55%;
     font-size: 56px;
-    color: #cc0051;
+    color: #001838;
+    font-weight: bolder;
+    font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
     font-weight: 200;
     line-height: 70px;
-    @media (max-width: 768px) {
+    @media (max-width: 758px) {
       text-align: center;
       font-size: 20px;
       width: 100%;
@@ -126,7 +129,6 @@ const Hero = styled.div`
   }
 
   img {
-    /* z-index: -1; */
     width: 700px;
     height: 670px;
     position: absolute;
@@ -167,13 +169,10 @@ const Google = styled.button`
   color: rgba(0, 0, 0, 0.6);
   &:hover {
     background-color: rgba(207, 207, 207, 0.25);
-    color: rgba(0, 0, 0, 0.75);
   }
 `;
 
-
-
-const mapStateToProps =(state) => {
+const mapStateToProps = (state) => {
   return {
     user: state.userState.user,
   };
@@ -183,4 +182,4 @@ const mapDispatchToProps = (dispatch) => ({
   signIn: () => dispatch(signInAPI()),
 });
 
-export default connect(mapStateToProps,mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

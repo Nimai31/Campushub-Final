@@ -12,10 +12,10 @@ const UserDetailsModal = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const userId = props.user.uid; // Assuming user ID is available in user object
+    const userEmail = props.user.email; // Use user email
     const userDetails = { headline, branch, semester, links };
 
-    props.updateUserDetails(userId, userDetails);
+    props.updateUserDetails(userEmail, userDetails);
     reset(e);
   };
 
@@ -187,8 +187,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  updateUserDetails: (userId, details) =>
-    dispatch(updateUserDetailsAPI(userId, details)),
+  updateUserDetails: (email, details) =>
+    dispatch(updateUserDetailsAPI(email, details)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserDetailsModal);

@@ -131,11 +131,11 @@ export function getArticlesAPI() {
   };
 }
 
-export const fetchUserDetails = (userId, details) => {
+export const fetchUserDetails = (email) => {
   return (dispatch) => {
     db.collection("users")
-      .doc(userId)
-      .get(details)
+      .doc(email)
+      .get()
       .then((doc) => {
         if (doc.exists) {
           dispatch(setUserDetails(doc.data()));
@@ -149,10 +149,10 @@ export const fetchUserDetails = (userId, details) => {
   };
 };
 
-export const updateUserDetailsAPI = (userId, details) => {
+export const updateUserDetailsAPI = (email, details) => {
   return (dispatch) => {
     db.collection("users")
-      .doc(userId)
+      .doc(email)
       .set(details, { merge: true })
       .then(() => {
         dispatch(setUserDetails(details));

@@ -128,7 +128,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   fetchUserDetailsByEmail: (email) => dispatch(fetchUserDetailsByEmail(email)),
-  getArticles: () => dispatch(getArticlesAPI()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(otherUserProfile);

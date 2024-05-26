@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import PostModal from "./PostModal";
 import { connect } from "react-redux";
-import { getArticlesAPI } from "../actions";
+import { getArticlesAPI, updateArticleLikes } from "../actions"; // Import the new action
 import ReactPlayer from "react-player";
 import { useNavigate } from "react-router-dom";
 
@@ -36,11 +36,12 @@ const Main = (props) => {
     navigate(`/user/${email}`);
   };
 
+  const handleLike = (articleId) => {
+    props.updateArticleLikes(articleId, props.user.email); // Update likes
+  };
+
   return (
     <>
-      {props.articles.length === 0 ? (
-        <p>There are no articles</p>
-      ) : (
         <Container>
           <Sharebox>
             <div>
@@ -78,6 +79,9 @@ const Main = (props) => {
               </button>
             </div>
           </Sharebox>
+          {props.articles.length === 0 ? (
+        <p>There are no articles</p>
+      ) : (
           <Content>
             {props.loading && <img src="/images/spin-loader.svg" />}
             {props.articles.length > 0 &&
@@ -113,15 +117,15 @@ const Main = (props) => {
                       <button>
                         <img src="/images/like-pic.svg" alt="" />
                         <img src="/images/clap-pic.svg" alt="" />
-                        <span>75</span>
+                        <span>{article.likes.count}</span> {/* Display like count */}
                       </button>
                     </li>
                     <li>
-                      <a>{article.comment}</a>
+                      <a>{article.comments}</a>
                     </li>
                   </SocialCounts>
                   <SocialActions>
-                    <button>
+                    <button onClick={() => handleLike(article.id)}> {/* Handle like button click */}
                       <img src="images/like-icon.svg" alt="" />
                       <span>Like</span>
                     </button>
@@ -143,10 +147,9 @@ const Main = (props) => {
                   </SocialActions>
                 </Article>
               ))}
-          </Content>
+          </Content>)}
           <PostModal showModal={showModal} handleClick={handleClick} />
         </Container>
-      )}
     </>
   );
 };
@@ -385,6 +388,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   getArticles: () => dispatch(getArticlesAPI()),
+  updateArticleLikes: (articleId, userEmail) => dispatch(updateArticleLikes(articleId, userEmail)), // Map the action to props
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

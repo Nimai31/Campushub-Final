@@ -95,6 +95,7 @@ export function postArticleAPI(payload) {
             sharedImage: downloadUrl,
             comments: 0,
             description: payload.description,
+            likes: { count: 0, users: [] }, // Initialize likes field
           });
           dispatch(setLoading(false));
         }
@@ -111,11 +112,43 @@ export function postArticleAPI(payload) {
         sharedImage: "",
         comments: 0,
         description: payload.description,
+        likes: { count: 0, users: [] }, // Initialize likes field
       });
       dispatch(setLoading(false));
     }
   };
 }
+
+export const updateArticleLikes = (articleId, userEmail) => {
+  return async (dispatch) => {
+    console.log(articleId);
+    const articleRef = db.collection("articles").doc(articleId);
+
+    const doc = await articleRef.get();
+    if (doc.exists) {
+      const articleData = doc.data();
+      const likes = articleData.likes || { count: 0, users: [] };
+
+      if (!likes.users.includes(userEmail)) {
+        likes.count += 1;
+        likes.users.push(userEmail);
+
+        articleRef.update({ likes })
+          .then(() => {
+            dispatch(getArticlesAPI()); // Refresh articles
+          })
+          .catch((error) => {
+            console.error("Error updating likes: ", error);
+          });
+      } else {
+        console.log("User has already liked this post.");
+      }
+    } else {
+      console.log("No such document!");
+    }
+  };
+};
+
 
 export function getArticlesAPI() {
   return (dispatch) => {
@@ -124,12 +157,16 @@ export function getArticlesAPI() {
     db.collection("articles")
       .orderBy("actor.date", "desc")
       .onSnapshot((snapshot) => {
-        payload = snapshot.docs.map((doc) => doc.data());
-        console.log(payload);
+        payload = snapshot.docs.map((doc) => ({
+          id: doc.id, // Include the document ID
+          ...doc.data()
+        }));
+        console.log(payload); // For debugging
         dispatch(getArticles(payload));
       });
   };
 }
+
 
 export const fetchUserDetails = (email) => {
   return (dispatch) => {

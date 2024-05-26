@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import PostModal from "./PostModal";
 import { connect } from "react-redux";
-import { getArticlesAPI, updateArticleLikes } from "../actions"; // Import the new action
+import { getArticlesAPI, updateArticleLikes, addCommentAPI } from "../actions"; // Import the new action
 import ReactPlayer from "react-player";
 import { useNavigate } from "react-router-dom";
 
 const Main = (props) => {
   const [showModal, setShowModal] = useState("close");
+  const [commentText, setCommentText] = useState("");
+  const [expandedArticleId, setExpandedArticleId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,6 +40,15 @@ const Main = (props) => {
 
   const handleLike = (articleId) => {
     props.updateArticleLikes(articleId, props.user.email); // Update likes
+  };
+
+  const handleCommentSubmit = (articleId) => {
+    props.addComment(articleId, commentText, props.user.email);
+    setCommentText(""); // Clear the input field after submitting
+  };
+
+  const toggleComments = (articleId) => {
+    setExpandedArticleId(expandedArticleId === articleId ? null : articleId);
   };
 
   return (
@@ -121,7 +132,7 @@ const Main = (props) => {
                       </button>
                     </li>
                     <li>
-                      <a>{article.comments}</a>
+                      <a>{article.comments.length}</a>
                     </li>
                   </SocialCounts>
                   <SocialActions>
@@ -130,7 +141,7 @@ const Main = (props) => {
                       <span>Like</span>
                     </button>
 
-                    <button>
+                    <button onClick={() => toggleComments(article.id)}>
                       <img src="/images/comments-icon.svg" alt="" />
                       <span>Comment</span>
                     </button>
@@ -145,6 +156,32 @@ const Main = (props) => {
                       <span>Send</span>
                     </button>
                   </SocialActions>
+                  {expandedArticleId === article.id && (
+                    <CommentSection>
+                      <CommentInput>
+  <input
+    type="text"
+    placeholder="Add a comment..."
+    value={commentText}
+    onChange={(e) => setCommentText(e.target.value)}
+  />
+  <button 
+    onClick={() => handleCommentSubmit(article.id)} 
+    disabled={commentText.trim() === ""}
+  >
+    Submit
+  </button>
+</CommentInput>
+                      <CommentsList>
+                        {article.comments.map((comment, index) => (
+                          <Comment key={index}>
+                            <span>{comment.userEmail}</span>
+                            <p>{comment.comment}</p>
+                          </Comment>
+                        ))}
+                      </CommentsList>
+                    </CommentSection>
+                  )}
                 </Article>
               ))}
           </Content>)}
@@ -378,6 +415,51 @@ const Content = styled.div`
   }
 `;
 
+const CommentSection = styled.div`
+  padding: 16px;
+  background-color: #f9f9f9;
+`;
+
+const CommentInput = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  input {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-right: 10px;
+  }
+  button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0073b1;
+    color: white;
+    cursor: pointer;
+    &:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+`;
+
+const CommentsList = styled.div`
+  margin-top: 16px;
+`;
+
+const Comment = styled.div`
+  margin-bottom: 8px;
+  span {
+    font-weight: bold;
+  }
+  p {
+    margin: 4px 0 0;
+  }
+`;
+
+
 const mapStateToProps = (state) => {
   return {
     loading: state.articleState.loading,
@@ -389,6 +471,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
   getArticles: () => dispatch(getArticlesAPI()),
   updateArticleLikes: (articleId, userEmail) => dispatch(updateArticleLikes(articleId, userEmail)), // Map the action to props
+  addComment: (articleId, comment, userEmail) => dispatch(addCommentAPI(articleId, comment, userEmail)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

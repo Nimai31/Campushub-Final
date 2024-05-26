@@ -5,6 +5,7 @@ import {
   SET_LOADING_STATUS,
   GET_ARTICLES,
   SET_USER_DETAILS,
+  ADD_COMMENT
 } from "./actionType";
 
 export const setUser = (payload) => ({
@@ -25,6 +26,12 @@ export const setLoading = (status) => ({
 export const setUserDetails = (payload) => ({
   type: SET_USER_DETAILS,
   payload,
+});
+
+export const addComment = (articleId, comment) => ({
+  type: ADD_COMMENT,
+  articleId,
+  comment,
 });
 
 export function signInAPI() {
@@ -67,7 +74,7 @@ export function postArticleAPI(payload) {
   return (dispatch) => {
     dispatch(setLoading(true));
 
-    if (payload.image != "") {
+    if (payload.image !== "") {
       const upload = storage
         .ref(`images/${payload.image.name}`)
         .put(payload.image);
@@ -93,7 +100,7 @@ export function postArticleAPI(payload) {
             },
             video: payload.video,
             sharedImage: downloadUrl,
-            comments: 0,
+            comments: [], // Initialize comments as an empty array
             description: payload.description,
             likes: { count: 0, users: [] }, // Initialize likes field
           });
@@ -110,14 +117,34 @@ export function postArticleAPI(payload) {
         },
         video: payload.video,
         sharedImage: "",
-        comments: 0,
+        comments: [], // Initialize comments as an empty array
         description: payload.description,
         likes: { count: 0, users: [] }, // Initialize likes field
       });
       dispatch(setLoading(false));
+    }else if (payload.description) { // New condition for text-only posts
+      db.collection("articles").add({
+        actor: {
+          description: payload.user.email,
+          title: payload.user.displayName,
+          date: payload.timestamp,
+          image: payload.user.photoURL,
+        },
+        video: "",
+        sharedImage: "",
+        comments: [],
+        description: payload.description,
+        likes: { count: 0, users: [] }, // Initialize likes field
+      });
+
+      dispatch(setLoading(false));
+    } else {
+      dispatch(setLoading(false));
+      console.log("Post must contain at least an image, video, or text description.");
     }
   };
 }
+ 
 
 export const updateArticleLikes = (articleId, userEmail) => {
   return async (dispatch) => {
@@ -235,6 +262,31 @@ export const fetchUserDetailsByEmail = (email) => {
       });
     } catch (error) {
       console.error("Error fetching user details:", error);
+    }
+  };
+};
+
+// Add Comment API
+export const addCommentAPI = (articleId, comment, userEmail) => {
+  return async (dispatch) => {
+    const articleRef = db.collection("articles").doc(articleId);
+
+    const doc = await articleRef.get();
+    if (doc.exists) {
+      const articleData = doc.data();
+      const comments = articleData.comments || [];
+
+      comments.push({ userEmail, comment });
+
+      articleRef.update({ comments })
+        .then(() => {
+          dispatch(addComment(articleId, { userEmail, comment }));
+        })
+        .catch((error) => {
+          console.error("Error adding comment: ", error);
+        });
+    } else {
+      console.log("No such document!");
     }
   };
 };

@@ -1,11 +1,11 @@
-import { SET_LOADING_STATUS, GET_ARTICLES } from "../actions/actionType";
+import { GET_ARTICLES, SET_LOADING_STATUS, ADD_COMMENT } from "../actions/actionType";
 
-export const initState = {
+const initialState = {
   articles: [],
   loading: false,
 };
 
-const articleReducer = (state = initState, action) => {
+const articleReducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_ARTICLES:
       return {
@@ -17,9 +17,19 @@ const articleReducer = (state = initState, action) => {
         ...state,
         loading: action.status,
       };
+    case ADD_COMMENT:
+      return {
+        ...state,
+        articles: state.articles.map(article =>
+          article.id === action.articleId
+            ? { ...article, comments: [...article.comments.filter(comment => comment.comment !== action.comment.comment), action.comment] }
+            : article
+        ),
+      };
     default:
       return state;
   }
 };
+
 
 export default articleReducer;

@@ -26,13 +26,13 @@ const OtherUserProfile = (props) => {
     <Container>
       <ProfileCard>
         <div>
-          {props.userDetails && props.userDetails.image ? (
-            <img src={props.userDetails.image} alt="User" />
+          {props.userDetails && props.userDetails.profilePicture ? (
+            <img src={props.userDetails.profilePicture} alt="User" />
           ) : (
             <img src="/images/user.svg" alt=" " />
           )}
           <UserInfo>
-            <h2>{ props.userDetails.username  }</h2>
+            <h2>{ props.userDetails.username}</h2>
             <p>{ email }</p>
             <h3>About : {props.userDetails.headline}</h3>
             <h3>Branch : {props.userDetails.branch}</h3>

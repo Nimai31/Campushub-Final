@@ -213,10 +213,10 @@ export const fetchUserDetails = (email) => {
   };
 };
 
-export const updateUserDetailsAPI = (email, profilePicture ,details) => {
+export const updateUserDetailsAPI = (email, profilePicture, username, details) => {
   return (dispatch) => {
 
-    const userDetails = {...details, profilePicture};
+    const userDetails = {...details, profilePicture, username};
 
     db.collection("users")
       .doc(email)
@@ -245,18 +245,6 @@ export const fetchUserDetailsByEmail = (email) => {
           } else {
             console.error("No such document in users collection!");
           }
-        });
-
-      // Fetch user details from the "articles" collection
-      await db.collection("articles")
-        .where("actor.description", "==", email)
-        .limit(1)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            userDetails.image = doc.data().actor.image; // Assuming the image is stored in the actor field
-            userDetails.username = doc.data().actor.title;
-          });
         });
 
       dispatch({

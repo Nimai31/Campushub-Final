@@ -11,13 +11,14 @@ const UserDetailsModal = (props) => {
   const [links, setLinks] = useState("");
 
   const handleSubmit = (e) => {
+    
     e.preventDefault();
-
+    const username = props.user.displayName;
     const userEmail = props.user.email; 
     const userProfileImage = props.user.photoURL;
     const userDetails = { headline, branch, semester, links };
 
-    props.updateUserDetails(userEmail, userProfileImage, userDetails);
+    props.updateUserDetails(userEmail, userProfileImage, username, userDetails);
     reset(e);
   };
 
@@ -212,8 +213,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  updateUserDetails: (email,image,details) =>
-    dispatch(updateUserDetailsAPI(email,image, details)),
+  updateUserDetails: (email, image, username, details) =>
+    dispatch(updateUserDetailsAPI(email, image, username, details)),
   fetchUserDetails: (email) => dispatch(fetchUserDetails(email)),
 });
 

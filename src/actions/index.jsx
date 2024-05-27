@@ -213,13 +213,16 @@ export const fetchUserDetails = (email) => {
   };
 };
 
-export const updateUserDetailsAPI = (email, details) => {
+export const updateUserDetailsAPI = (email, profilePicture ,details) => {
   return (dispatch) => {
+
+    const userDetails = {...details, profilePicture};
+
     db.collection("users")
       .doc(email)
-      .set(details, { merge: true })
+      .set(userDetails, { merge: true })
       .then(() => {
-        dispatch(setUserDetails(details));
+        dispatch(setUserDetails(userDetails));
       })
       .catch((error) => {
         console.error("Error updating user details: ", error);

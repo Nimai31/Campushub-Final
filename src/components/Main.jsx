@@ -16,6 +16,7 @@ const Main = (props) => {
     props.getArticles();
   }, []);
 
+
   const handleClick = (e) => {
     e.preventDefault();
     if (e.target !== e.currentTarget) {
@@ -43,9 +44,10 @@ const Main = (props) => {
   };
 
   const handleCommentSubmit = (articleId) => {
-    props.addComment(articleId, commentText, props.user.email);
-    setCommentText(""); // Clear the input field after submitting
+    props.addComment(articleId, commentText, props.user.email, props.user.photoURL);
+    setCommentText("");
   };
+  
 
   const toggleComments = (articleId) => {
     setExpandedArticleId(expandedArticleId === articleId ? null : articleId);
@@ -53,53 +55,55 @@ const Main = (props) => {
 
   return (
     <>
-        <Container>
-          <Sharebox>
-            <div>
-              {props.user && props.user.photoURL ? (
-                <img src={props.user.photoURL} alt="User" />
-              ) : (
-                <img src="/images/user.svg" alt="User" />
-              )}
-              <button
-                onClick={handleClick}
-                disabled={props.loading ? true : false}
-              >
-                Start a post
-              </button>
-            </div>
-            <div>
-              <button>
-                <img src="/images/post-photo-icon.svg" alt="" />
-                <span>Photo</span>
-              </button>
+      <Container>
+        <Sharebox>
+          <div>
+            {props.user && props.user.photoURL ? (
+              <img src={props.user.photoURL} alt="User" />
+            ) : (
+              <img src="/images/user.svg" alt="User" />
+            )}
+            <button
+              onClick={handleClick}
+              disabled={props.loading ? true : false}
+            >
+              Start a post
+            </button>
+          </div>
+          <div>
+            <button>
+              <img src="/images/post-photo-icon.svg" alt="" />
+              <span>Photo</span>
+            </button>
 
-              <button>
-                <img src="/images/post-video-icon.svg" alt="" />
-                <span>Video</span>
-              </button>
+            <button>
+              <img src="/images/post-video-icon.svg" alt="" />
+              <span>Video</span>
+            </button>
 
-              <button>
-                <img src="/images/post-event-icon.svg" alt="" />
-                <span>Event</span>
-              </button>
+            <button>
+              <img src="/images/post-event-icon.svg" alt="" />
+              <span>Event</span>
+            </button>
 
-              <button>
-                <img src="/images/post-article-icon.svg" alt="" />
-                <span>Article</span>
-              </button>
-            </div>
-          </Sharebox>
-          {props.articles.length === 0 ? (
-        <p>There are no articles</p>
-      ) : (
+            <button>
+              <img src="/images/post-article-icon.svg" alt="" />
+              <span>Article</span>
+            </button>
+          </div>
+        </Sharebox>
+        {props.articles.length === 0 ? (
+          <p>There are no articles</p>
+        ) : (
           <Content>
             {props.loading && <img src="/images/spin-loader.svg" />}
             {props.articles.length > 0 &&
               props.articles.map((article, key) => (
                 <Article key={key}>
                   <SharedActor>
-                    <a onClick={() => handleUserClick(article.actor.description)}>
+                    <a
+                      onClick={() => handleUserClick(article.actor.description)}
+                    >
                       <img src={article.actor.image} alt="" />
                       <div>
                         <span>{article.actor.title}</span>
@@ -128,7 +132,8 @@ const Main = (props) => {
                       <button>
                         <img src="/images/like-pic.svg" alt="" />
                         <img src="/images/clap-pic.svg" alt="" />
-                        <span>{article.likes.count}</span> {/* Display like count */}
+                        <span>{article.likes.count}</span>{" "}
+                        {/* Display like count */}
                       </button>
                     </li>
                     <li>
@@ -136,7 +141,9 @@ const Main = (props) => {
                     </li>
                   </SocialCounts>
                   <SocialActions>
-                    <button onClick={() => handleLike(article.id)}> {/* Handle like button click */}
+                    <button onClick={() => handleLike(article.id)}>
+                      {" "}
+                      {/* Handle like button click */}
                       <img src="images/like-icon.svg" alt="" />
                       <span>Like</span>
                     </button>
@@ -159,24 +166,28 @@ const Main = (props) => {
                   {expandedArticleId === article.id && (
                     <CommentSection>
                       <CommentInput>
-  <input
-    type="text"
-    placeholder="Add a comment..."
-    value={commentText}
-    onChange={(e) => setCommentText(e.target.value)}
-  />
-  <button 
-    onClick={() => handleCommentSubmit(article.id)} 
-    disabled={commentText.trim() === ""}
-  >
-    Submit
-  </button>
-</CommentInput>
+                        <input
+                          type="text"
+                          placeholder="Add a comment..."
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                        />
+                        <button
+                          onClick={() => handleCommentSubmit(article.id)}
+                          disabled={commentText.trim() === ""}
+                        >
+                          Submit
+                        </button>
+                      </CommentInput>
                       <CommentsList>
+                        {console.log(article.comments)}
                         {article.comments.map((comment, index) => (
                           <Comment key={index}>
-                            <span>{comment.userEmail}</span>
-                            <p>{comment.comment}</p>
+                            <img src={comment.userImage} onClick={() => {handleUserClick(comment.userEmail)}}/>
+                            <div>
+                              <span onClick={() => {handleUserClick(comment.userEmail)}}>{comment.userEmail}</span>
+                              <p>{comment.comment}</p>
+                            </div>
                           </Comment>
                         ))}
                       </CommentsList>
@@ -184,9 +195,10 @@ const Main = (props) => {
                   )}
                 </Article>
               ))}
-          </Content>)}
-          <PostModal showModal={showModal} handleClick={handleClick} />
-        </Container>
+          </Content>
+        )}
+        <PostModal showModal={showModal} handleClick={handleClick} />
+      </Container>
     </>
   );
 };
@@ -396,9 +408,14 @@ const SocialActions = styled.div`
     align-items: center;
     padding: 8px;
     color: #001838;
-    background: #98c5e9;
+    background-color: #98c5e9;
     border: none;
 
+    img {
+      height: 30px;
+      padding-right: 1px;
+    }
+    
     @media (min-width: 768px) {
       span {
         margin-left: 8px;
@@ -416,14 +433,16 @@ const Content = styled.div`
 `;
 
 const CommentSection = styled.div`
+  background-color: #98c5e9;
   padding: 16px;
-  background-color: #f9f9f9;
 `;
 
 const CommentInput = styled.div`
   display: flex;
   align-items: center;
   margin-top: 10px;
+  border-bottom: 2px solid black;
+  padding-bottom: 10px;
   input {
     flex: 1;
     border: 1px solid #ccc;
@@ -450,15 +469,37 @@ const CommentsList = styled.div`
 `;
 
 const Comment = styled.div`
-  margin-bottom: 8px;
+  
+  text-align: left;
+  margin-bottom: 15px;
+  display: flex;
+  div{
+    border: 3px solid #001838;
+    border-radius: 5px;
+    width: 100%;
+  }
+  img{
+    height: 40px;
+    border-radius:50%;
+    margin-right:5px;
+    margin-top:5px;
+    cursor: pointer;
+  }
   span {
+    cursor: pointer;
     font-weight: bold;
+    //background-color: #001838;
+    padding: 3px;
+    color: #001838;
+    //border-bottom: 3px solid #001838;
+    
   }
   p {
+    padding: 3px;
+    padding-left: 10px;
     margin: 4px 0 0;
   }
 `;
-
 
 const mapStateToProps = (state) => {
   return {
@@ -470,8 +511,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   getArticles: () => dispatch(getArticlesAPI()),
-  updateArticleLikes: (articleId, userEmail) => dispatch(updateArticleLikes(articleId, userEmail)), // Map the action to props
-  addComment: (articleId, comment, userEmail) => dispatch(addCommentAPI(articleId, comment, userEmail)),
+  updateArticleLikes: (articleId, userEmail) =>
+    dispatch(updateArticleLikes(articleId, userEmail)),
+  addComment: (articleId, comment, userEmail, userImage) =>
+    dispatch(addCommentAPI(articleId, comment, userEmail, userImage)), // Updated to include userImage
 });
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

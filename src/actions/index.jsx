@@ -267,7 +267,7 @@ export const fetchUserDetailsByEmail = (email) => {
 };
 
 // Add Comment API
-export const addCommentAPI = (articleId, comment, userEmail) => {
+export const addCommentAPI = (articleId, comment, userEmail, userImage) => {
   return async (dispatch) => {
     const articleRef = db.collection("articles").doc(articleId);
 
@@ -276,11 +276,11 @@ export const addCommentAPI = (articleId, comment, userEmail) => {
       const articleData = doc.data();
       const comments = articleData.comments || [];
 
-      comments.push({ userEmail, comment });
+      comments.push({ userEmail, comment, userImage });
 
       articleRef.update({ comments })
         .then(() => {
-          dispatch(addComment(articleId, { userEmail, comment }));
+          dispatch(addComment(articleId, { userEmail, comment, userImage }));
         })
         .catch((error) => {
           console.error("Error adding comment: ", error);

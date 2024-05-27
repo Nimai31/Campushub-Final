@@ -3,9 +3,10 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { fetchUserDetailsByEmail } from "../actions"; // Assuming you have an action to fetch user details by email
 import { connect } from "react-redux";
+import { getArticlesAPI } from "../actions";
 
 
-const otherUserProfile = (props) => {
+const OtherUserProfile = (props) => {
   const { email } = useParams();
   const [loading, setLoading] = useState(true);
 
@@ -33,11 +34,11 @@ const otherUserProfile = (props) => {
           <UserInfo>
             <h2>{ props.userDetails.username  }</h2>
             <p>{ email }</p>
-            <h3>{props.userDetails.headline}</h3>
-            <h3>{props.userDetails.branch}</h3>
-            <h3>{props.userDetails.semester}</h3>
+            <h3>About : {props.userDetails.headline}</h3>
+            <h3>Branch : {props.userDetails.branch}</h3>
+            <h3>Semester : {props.userDetails.semester}</h3>
             {props.userDetails.links && (
-              <h3>
+              <h3>Resume/ Coding Links : 
                 <a href={props.userDetails.links} target="_blank" rel="noopener noreferrer">
                   {props.userDetails.links}
                 </a>
@@ -128,6 +129,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   fetchUserDetailsByEmail: (email) => dispatch(fetchUserDetailsByEmail(email)),
+  getArticles: () => dispatch(getArticlesAPI()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(otherUserProfile);
+export default connect(mapStateToProps, mapDispatchToProps)(OtherUserProfile);

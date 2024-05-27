@@ -39,8 +39,22 @@ export function signInAPI() {
     auth
       .signInWithPopup(provider)
       .then((payload) => {
+        const user = payload.user;
+
+        const userRef = db.collection("users").doc(user.email);
+
+        userRef.get().then((doc) => {
+          if (!doc.exists) {
+            userRef.set({
+              email: user.email,
+              username: user.displayName,
+              profilePicture: user.photoURL,
+            });
+          }
+        });
+
         dispatch(setUser(payload.user));
-        dispatch(fetchUserDetails(payload.user.email)); // Fetch user details after sign-in
+        dispatch(fetchUserDetails(user.email)); // Fetch user details after sign-in
       })
       .catch((error) => alert(error.message));
   };

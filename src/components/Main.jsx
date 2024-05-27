@@ -48,7 +48,6 @@ const Main = (props) => {
     setCommentText("");
   };
   
-
   const toggleComments = (articleId) => {
     setExpandedArticleId(expandedArticleId === articleId ? null : articleId);
   };
@@ -183,12 +182,12 @@ const Main = (props) => {
                         {console.log(article.comments)}
                         {article.comments.map((comment, index) => (
                           <Comment key={index}>
-                            <img src={comment.userImage} onClick={() => {handleUserClick(comment.userEmail)}}/>
-                            <div>
-                              <span onClick={() => {handleUserClick(comment.userEmail)}}>{comment.userEmail}</span>
-                              <p>{comment.comment}</p>
-                            </div>
-                          </Comment>
+                          <img src={comment.userImage} onClick={() => handleUserClick(comment.userEmail)} />
+                          <div>
+                            <span onClick={() => handleUserClick(comment.userEmail)}>{comment.username}</span> {/* Display the username */}
+                            <p>{comment.comment}</p>
+                          </div>
+                        </Comment>
                         ))}
                       </CommentsList>
                     </CommentSection>
@@ -514,8 +513,7 @@ const mapDispatchToProps = (dispatch) => ({
   updateArticleLikes: (articleId, userEmail) =>
     dispatch(updateArticleLikes(articleId, userEmail)),
   addComment: (articleId, comment, userEmail, userImage) =>
-    dispatch(addCommentAPI(articleId, comment, userEmail, userImage)), // Updated to include userImage
+    dispatch(addCommentAPI(articleId, comment, userEmail, userImage)), // Updated to include username
 });
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

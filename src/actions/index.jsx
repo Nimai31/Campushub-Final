@@ -257,27 +257,36 @@ export const fetchUserDetailsByEmail = (email) => {
   };
 };
 
-// Add Comment API
 export const addCommentAPI = (articleId, comment, userEmail, userImage) => {
   return async (dispatch) => {
-    const articleRef = db.collection("articles").doc(articleId);
+    const userRef = db.collection("users").doc(userEmail);
+    
+    try {
+      const userDoc = await userRef.get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        const username = userData.username || userEmail; // Fallback to email if username doesn't exist
 
-    const doc = await articleRef.get();
-    if (doc.exists) {
-      const articleData = doc.data();
-      const comments = articleData.comments || [];
+        const articleRef = db.collection("articles").doc(articleId);
 
-      comments.push({ userEmail, comment, userImage });
+        const articleDoc = await articleRef.get();
+        if (articleDoc.exists) {
+          const articleData = articleDoc.data();
+          const comments = articleData.comments || [];
 
-      articleRef.update({ comments })
-        .then(() => {
-          dispatch(addComment(articleId, { userEmail, comment, userImage }));
-        })
-        .catch((error) => {
-          console.error("Error adding comment: ", error);
-        });
-    } else {
-      console.log("No such document!");
+          comments.push({ userEmail, username, comment, userImage });
+
+          await articleRef.update({ comments });
+          dispatch(addComment(articleId, { userEmail, username, comment, userImage }));
+        } else {
+          console.log("No such document!");
+        }
+      } else {
+        console.log("User does not exist!");
+      }
+    } catch (error) {
+      console.error("Error fetching user details or adding comment: ", error);
     }
   };
 };
+

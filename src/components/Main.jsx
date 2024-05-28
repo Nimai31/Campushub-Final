@@ -124,6 +124,7 @@ const Main = (props) => {
                       <img src="/images/ellipsis.svg" alt="" />
                     </button>
                     {dropdownOpen === article.id && (
+                      
                       <DropdownMenu>
                         <DropdownItem
                           onClick={() => handleDelete(article.id)}
@@ -132,6 +133,7 @@ const Main = (props) => {
                           Delete
                         </DropdownItem>
                       </DropdownMenu>
+                      
                     )}
                   </SharedActor>
                   <Description>{article.description}</Description>
@@ -356,7 +358,7 @@ const SharedActor = styled.div`
 const DropdownMenu = styled.div`
   position: absolute;
   right: 10px;
-  top: 40px;
+  top: 30px;
   background: white;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -367,8 +369,8 @@ const DropdownMenu = styled.div`
 const DropdownItem = styled.button`
   display: block;
   padding: 10px 20px;
-  background: transparent;
-  border: none;
+  background: white;
+  border: 3px solid  #001838;
   text-align: left;
   width: 100%;
   &:hover {
@@ -379,6 +381,7 @@ const DropdownItem = styled.button`
     cursor: not-allowed;
   }
 `;
+
 
 const Description = styled.div`
   padding: 0 16px;
@@ -459,26 +462,27 @@ const SocialActions = styled.div`
 `;
 
 const CommentSection = styled.div`
-  padding: 10px;
-  border-top: 1px solid #ccc;
+  background-color: #98c5e9;
+  padding: 16px;
 `;
 
 const CommentInput = styled.div`
   display: flex;
-  margin-bottom: 10px;
-
+  align-items: center;
+  margin-top: 10px;
+  border-bottom: 2px solid black;
+  padding-bottom: 10px;
   input {
     flex: 1;
-    padding: 5px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 5px;
+    padding: 10px;
+    margin-right: 10px;
   }
-
   button {
-    padding: 5px 10px;
-    margin-left: 5px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     background-color: #0073b1;
     color: white;
     cursor: pointer;
@@ -490,27 +494,36 @@ const CommentInput = styled.div`
 `;
 
 const CommentsList = styled.div`
-  max-height: 200px;
-  overflow-y: auto;
+  margin-top: 16px;
 `;
 
 const Comment = styled.div`
+  
+  text-align: left;
+  margin-bottom: 15px;
   display: flex;
-  margin-bottom: 10px;
-  img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    margin-right: 10px;
+  div{
+    border: 3px solid #001838;
+    border-radius: 5px;
+    width: 100%;
   }
-  div {
-    span {
-      font-weight: bold;
-      cursor: pointer;
-    }
-    p {
-      margin: 0;
-    }
+  img{
+    height: 40px;
+    border-radius:50%;
+    margin-right:5px;
+    margin-top:5px;
+    cursor: pointer;
+  }
+  span {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 3px;
+    color: #001838;
+  }
+  p {
+    padding: 3px;
+    padding-left: 10px;
+    margin: 4px 0 0;
   }
 `;
 

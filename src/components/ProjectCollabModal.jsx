@@ -40,8 +40,9 @@ const ProjectCollabModal = (props) => {
       roles,
       user: props.user.displayName,
       timestamp: firebase.firestore.Timestamp.now(),
+      
     };
-
+    console.log(props.currentProject.id);
     if (props.currentProject) {
       props.updateProject(props.currentProject.id, payload);
     } else {
@@ -54,11 +55,12 @@ const ProjectCollabModal = (props) => {
     setTitle("");
     setDescription("");
     setRoles([{ role: "", name: "" }]);
-    props.handleClick("close");
+    props.handleModal("close");
   };
 
   return (
     <>
+      
       {props.showModal === "open" && (
         <Container>
           <Content>
@@ -136,6 +138,7 @@ const Content = styled.div`
   max-width: 552px;
   background-color: white;
   max-height: 90%;
+  overflow: initial;
   border-radius: 5px;
   position: relative;
   display: flex;
@@ -146,26 +149,21 @@ const Content = styled.div`
 
 const Header = styled.div`
   display: block;
-  padding: 16px 24px;
+  padding: 16px 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.15);
   font-size: 16px;
   line-height: 1.5;
   color: rgba(0, 0, 0, 0.6);
+  font-weight: 400;
   display: flex;
   justify-content: space-between;
-  align-items: center;
 
   button {
     height: 40px;
     width: 40px;
     min-width: auto;
     color: rgba(0, 0, 0, 0.15);
-    background: none;
-    border: none;
-    cursor: pointer;
-
     img {
-      max-height: 28px;
       pointer-events: none;
     }
   }
@@ -173,17 +171,19 @@ const Header = styled.div`
 
 const Editor = styled.div`
   padding: 12px 24px;
+
+  input,
   textarea {
     width: 100%;
-    min-height: 100px;
-    resize: none;
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
   }
 
-  input {
-    width: 100%;
-    height: 35px;
-    font-size: 16px;
-    margin-bottom: 20px;
+  textarea {
+    resize: none;
+    height: 100px;
   }
 `;
 
@@ -191,37 +191,36 @@ const RoleInput = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 
   input {
-    flex: 1;
-    margin-right: 10px;
+    width: 45%;
   }
 
   button {
-    padding: 5px 10px;
-    background: #d9534f;
-    color: white;
+    padding: 8px 16px;
+    background: #e0e0e0;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 
     &:hover {
-      background: #c9302c;
+      background: #d0d0d0;
     }
   }
 `;
 
 const PostButton = styled.button`
-  min-width: 60px;
-  border-radius: 20px;
-  padding-left: 16px;
-  padding-right: 16px;
-  background: ${(props) => (props.disabled ? "rgba(0,0,0,0.8)" : "#0a66c2")};
-  color: ${(props) => (props.disabled ? "rgba(1,1,1,0.2)" : "white")};
+  margin: 16px;
+  padding: 8px 16px;
+  background: #0a66c2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
   &:hover {
     background: #004182;
-    background: ${(props) => (props.disabled ? "rgba(0,0,0,0.8)" : "#004182")};
   }
 `;
 

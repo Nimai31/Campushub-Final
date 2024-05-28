@@ -1,10 +1,7 @@
-// ProjectCollabList.jsx
-
 import { useEffect } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { getProjectsAPI } from "../actions";
-import ProjectCollabModal from "./ProjectCollabModal";
 import { Navigate } from "react-router-dom";
 
 const ProjectCollabList = (props) => {
@@ -16,7 +13,6 @@ const ProjectCollabList = (props) => {
 
   return (
     <Container>
-      {!props.user && <Navigate to='/'/>}
       {props.projects.length > 0 ? (
         props.projects
           .sort((a, b) => b.timestamp.seconds - a.timestamp.seconds) // Sort by timestamp
@@ -35,9 +31,7 @@ const ProjectCollabList = (props) => {
               </Roles>
               {props.user.displayName === project.user && (
                 <EditButton
-                  onClick={() =>
-                    props.setCurrentProject(project) & props.handleClick("open")
-                  }
+                  onClick={() => props.handleEditProject(project)}
                 >
                   Edit
                 </EditButton>
@@ -47,11 +41,6 @@ const ProjectCollabList = (props) => {
       ) : (
         <p>No projects available</p>
       )}
-      <ProjectCollabModal
-        showModal={props.showModal}
-        handleClick={(e) => props.handleClick(e)}
-        currentProject={props.currentProject}
-      />
     </Container>
   );
 };
@@ -80,16 +69,11 @@ const mapStateToProps = (state) => {
   return {
     projects: state.projectState.projects,
     user: state.userState.user,
-    showModal: state.uiState.showModal,
-    currentProject: state.projectState.currentProject,
   };
 };
 
 const mapDispatchToProps = (dispatch) => ({
   getProjects: () => dispatch(getProjectsAPI()),
-  setShowModal: (status) => dispatch({ type: "SET_SHOW_MODAL", status }),
-  setCurrentProject: (project) =>
-    dispatch({ type: "SET_CURRENT_PROJECT", project }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectCollabList);

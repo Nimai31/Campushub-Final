@@ -19,21 +19,25 @@ const ProjectCollab = (props) => {
   const handleEditProject = (project) => {
     setCurrentProject(project);
     setShowModal("open");
+    console.log(currentProject);
   };
 
   return (
     <Container>
-      {!props.user && <Navigate to='/'/>}
+      {!props.user && <Navigate to="/" />}
       <Header>
         <h1>Project Collaboration</h1>
         <button onClick={() => handleModal("open")}>Create New Project</button>
       </Header>
       <ProjectCollabList
         handleEditProject={handleEditProject}
+        showModal={showModal}
+        handleModal={handleModal}
+        currentProject={currentProject}
       />
       <ProjectCollabModal
         showModal={showModal}
-        handleClick={handleModal}
+        handleModal={handleModal}
         currentProject={currentProject}
       />
     </Container>
@@ -77,6 +81,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-
 export default connect(mapStateToProps)(ProjectCollab);
-

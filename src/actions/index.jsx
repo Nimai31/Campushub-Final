@@ -362,6 +362,7 @@ export const postProjectAPI = (payload) => {
 
 export const updateProjectAPI = (id, payload) => {
   return (dispatch) => {
+    console.log(id);
     const projectRef = db.collection("projects").doc(id);
     projectRef.update(payload).then(() => {
       dispatch({ type: UPDATE_PROJECT, id, payload });

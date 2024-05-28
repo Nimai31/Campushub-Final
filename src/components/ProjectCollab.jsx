@@ -19,12 +19,14 @@ const ProjectCollab = (props) => {
   const handleEditProject = (project) => {
     setCurrentProject(project);
     setShowModal("open");
-    console.log(currentProject);
   };
+
+  if (!props.user) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <Container>
-      {!props.user && <Navigate to="/" />}
       <Header>
         <h1>Project Collaboration</h1>
         <button onClick={() => handleModal("open")}>Create New Project</button>

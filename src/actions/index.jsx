@@ -7,6 +7,11 @@ import {
   SET_USER_DETAILS,
   ADD_COMMENT,
   DELETE_ARTICLE,
+  POST_PROJECT,
+  UPDATE_PROJECT,
+  GET_PROJECTS,
+  SET_CURRENT_PROJECT,
+  SET_SHOW_MODAL
 } from "./actionType";
 
 export const setUser = (payload) => ({
@@ -38,6 +43,32 @@ export const addComment = (articleId, comment) => ({
   type: ADD_COMMENT,
   articleId,
   comment,
+});
+
+export const postProject = (payload) => ({
+  type: POST_PROJECT,
+  payload,
+});
+
+export const updateProject = (id, payload) => ({
+  type: UPDATE_PROJECT,
+  id,
+  payload,
+});
+
+export const getProjects = (payload) => ({
+  type: GET_PROJECTS,
+  payload,
+});
+
+export const setShowModal = (status) => ({
+  type: SET_SHOW_MODAL,
+  status,
+});
+
+export const setCurrentProject = (project) => ({
+  type: SET_CURRENT_PROJECT,
+  project,
 });
 
 export function signInAPI() {
@@ -320,3 +351,32 @@ export const addCommentAPI = (articleId, comment, userEmail, userImage) => {
   };
 };
 
+export const postProjectAPI = (payload) => {
+  return (dispatch) => {
+    const projectRef = db.collection("projects");
+    projectRef.add(payload).then(() => {
+      dispatch({ type: POST_PROJECT, payload });
+    });
+  };
+};
+
+export const updateProjectAPI = (id, payload) => {
+  return (dispatch) => {
+    const projectRef = db.collection("projects").doc(id);
+    projectRef.update(payload).then(() => {
+      dispatch({ type: UPDATE_PROJECT, id, payload });
+    });
+  };
+};
+
+export const getProjectsAPI = () => {
+  return (dispatch) => {
+    let payload;
+    const projectRef = db.collection("projects");
+
+    projectRef.onSnapshot((snapshot) => {
+      payload = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      dispatch({ type: GET_PROJECTS, payload });
+    });
+  };
+};

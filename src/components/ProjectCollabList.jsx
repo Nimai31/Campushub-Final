@@ -1,42 +1,49 @@
+// ProjectCollabList.jsx
+
 import { useEffect } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { getProjectsAPI } from "../actions";
 import ProjectCollabModal from "./ProjectCollabModal";
+import { Navigate } from "react-router-dom";
 
 const ProjectCollabList = (props) => {
   useEffect(() => {
-    props.getProjects();
+    if (!props.projects.length) {
+      props.getProjects();
+    }
   }, []);
 
   return (
     <Container>
       {!props.user && <Navigate to='/'/>}
       {props.projects.length > 0 ? (
-        props.projects.map((project) => (
-          <ProjectItem key={project.id}>
-            <h3>{project.title}</h3>
-            <p>by {project.user}</p>
-            <p>{new Date(project.timestamp.seconds * 1000).toLocaleString()}</p>
-            <p>{project.description}</p>
-            <Roles>
-              {project.roles.map((role, index) => (
-                <Role key={index}>
-                  <strong>{role.role}:</strong> {role.name}
-                </Role>
-              ))}
-            </Roles>
-            {props.user.displayName === project.user && (
-              <EditButton
-                onClick={() =>
-                  props.setCurrentProject(project) & props.handleClick("open")
-                }
-              >
-                Edit
-              </EditButton>
-            )}
-          </ProjectItem>
-        ))
+        props.projects
+          .sort((a, b) => b.timestamp.seconds - a.timestamp.seconds) // Sort by timestamp
+          .map((project) => (
+            <ProjectItem key={project.id}>
+              <h3>{project.title}</h3>
+              <p>by {project.user}</p>
+              <p>{new Date(project.timestamp.seconds * 1000).toLocaleString()}</p>
+              <p>{project.description}</p>
+              <Roles>
+                {project.roles.map((role, index) => (
+                  <Role key={index}>
+                    <strong>{role.role}:</strong> {role.name}
+                  </Role>
+                ))}
+              </Roles>
+              {props.user.displayName === project.user && (
+                <EditButton
+                  onClick={() =>
+                    props.setCurrentProject(project) & props.handleClick("open")
+                  }
+                >
+                  Edit
+                </EditButton>
+              )}
+            </ProjectItem>
+          ))
       ) : (
         <p>No projects available</p>
       )}

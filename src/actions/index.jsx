@@ -371,12 +371,15 @@ export const updateProjectAPI = (id, payload) => {
 
 export const getProjectsAPI = () => {
   return (dispatch) => {
-    let payload;
-    const projectRef = db.collection("projects");
-
-    projectRef.onSnapshot((snapshot) => {
-      payload = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      dispatch({ type: GET_PROJECTS, payload });
-    });
+    db.collection("projects")
+      .get()
+      .then((snapshot) => {
+        const payload = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        dispatch({ type: GET_PROJECTS, payload });
+      })
+      .catch((error) => {
+        console.error("Error fetching projects:", error);
+      });
   };
 };
+

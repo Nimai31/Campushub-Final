@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import ProjectCollabList from "./ProjectCollabList";
 import ProjectCollabModal from "./ProjectCollabModal";
+import { connect } from "react-redux";
+import { Navigate } from "react-router-dom";
 
-const ProjectCollab = () => {
+const ProjectCollab = (props) => {
   const [showModal, setShowModal] = useState("close");
   const [currentProject, setCurrentProject] = useState(null);
 
@@ -21,6 +23,7 @@ const ProjectCollab = () => {
 
   return (
     <Container>
+      {!props.user && <Navigate to='/'/>}
       <Header>
         <h1>Project Collaboration</h1>
         <button onClick={() => handleModal("open")}>Create New Project</button>
@@ -68,4 +71,12 @@ const Header = styled.div`
   }
 `;
 
-export default ProjectCollab;
+const mapStateToProps = (state) => {
+  return {
+    user: state.userState.user,
+  };
+};
+
+
+export default connect(mapStateToProps)(ProjectCollab);
+

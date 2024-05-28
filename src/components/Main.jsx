@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import PostModal from "./PostModal";
 import { connect } from "react-redux";
-import { getArticlesAPI, updateArticleLikes, addCommentAPI } from "../actions"; // Import the new action
+import { getArticlesAPI, updateArticleLikes, addCommentAPI, deleteArticleAPI } from "../actions"; // Import the new action
 import ReactPlayer from "react-player";
 import { useNavigate } from "react-router-dom";
 
@@ -10,12 +10,12 @@ const Main = (props) => {
   const [showModal, setShowModal] = useState("close");
   const [commentText, setCommentText] = useState("");
   const [expandedArticleId, setExpandedArticleId] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     props.getArticles();
   }, []);
-
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -40,7 +40,7 @@ const Main = (props) => {
   };
 
   const handleLike = (articleId) => {
-    props.updateArticleLikes(articleId, props.user.email); // Update likes
+    props.updateArticleLikes(articleId, props.user.email);
   };
 
   const handleCommentSubmit = (articleId) => {
@@ -50,6 +50,14 @@ const Main = (props) => {
   
   const toggleComments = (articleId) => {
     setExpandedArticleId(expandedArticleId === articleId ? null : articleId);
+  };
+
+  const handleDropdown = (articleId) => {
+    setDropdownOpen(dropdownOpen === articleId ? null : articleId);
+  };
+
+  const handleDelete = (articleId) => {
+    props.deleteArticle(articleId);
   };
 
   return (
@@ -112,9 +120,19 @@ const Main = (props) => {
                         </span>
                       </div>
                     </a>
-                    <button>
+                    <button onClick={() => handleDropdown(article.id)}>
                       <img src="/images/ellipsis.svg" alt="" />
                     </button>
+                    {dropdownOpen === article.id && (
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => handleDelete(article.id)}
+                          disabled={props.user.email !== article.actor.description}
+                        >
+                          Delete
+                        </DropdownItem>
+                      </DropdownMenu>
+                    )}
                   </SharedActor>
                   <Description>{article.description}</Description>
                   <SharedImg>
@@ -131,8 +149,7 @@ const Main = (props) => {
                       <button>
                         <img src="/images/like-pic.svg" alt="" />
                         <img src="/images/clap-pic.svg" alt="" />
-                        <span>{article.likes.count}</span>{" "}
-                        {/* Display like count */}
+                        <span>{article.likes.count}</span>
                       </button>
                     </li>
                     <li>
@@ -141,8 +158,6 @@ const Main = (props) => {
                   </SocialCounts>
                   <SocialActions>
                     <button onClick={() => handleLike(article.id)}>
-                      {" "}
-                      {/* Handle like button click */}
                       <img src="images/like-icon.svg" alt="" />
                       <span>Like</span>
                     </button>
@@ -184,7 +199,7 @@ const Main = (props) => {
                           <Comment key={index}>
                           <img src={comment.userImage} onClick={() => handleUserClick(comment.userEmail)} />
                           <div>
-                            <span onClick={() => handleUserClick(comment.userEmail)}>{comment.username}</span> {/* Display the username */}
+                            <span onClick={() => handleUserClick(comment.userEmail)}>{comment.username}</span>
                             <p>{comment.comment}</p>
                           </div>
                         </Comment>
@@ -292,20 +307,17 @@ const SharedActor = styled.div`
   margin-bottom: 8px;
   align-items: center;
   display: flex;
-
   a {
     margin-right: 12px;
     flex-grow: 1;
     overflow: hidden;
     display: flex;
     text-decoration: none;
-    cursor: pointer;
 
     img {
       width: 48px;
       height: 48px;
     }
-
     & > div {
       display: flex;
       flex-direction: column;
@@ -313,16 +325,13 @@ const SharedActor = styled.div`
       flex-basis: 0;
       margin-left: 8px;
       overflow: hidden;
-
       span {
         text-align: left;
-
         &:first-child {
           font-size: 14px;
           font-weight: 700;
-          color: rgba(0, 0, 0, 1);
+          color: black;
         }
-
         &:nth-child(n + 1) {
           font-size: 12px;
           color: rgba(0, 0, 0, 0.6);
@@ -330,7 +339,6 @@ const SharedActor = styled.div`
       }
     }
   }
-
   button {
     position: absolute;
     right: 12px;
@@ -338,17 +346,44 @@ const SharedActor = styled.div`
     background: transparent;
     border: none;
     outline: none;
-
     img {
-      width: 30px;
+      width: 20px;
+      height: 20px;
     }
   }
 `;
 
+const DropdownMenu = styled.div`
+  position: absolute;
+  right: 10px;
+  top: 40px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+`;
+
+const DropdownItem = styled.button`
+  display: block;
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  width: 100%;
+  &:hover {
+    background: #f5f5f5;
+  }
+  &:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
 const Description = styled.div`
-  padding: 16px;
+  padding: 0 16px;
   overflow: hidden;
-  color: rgba(0, 0, 0, 0.9);
+  color: black;
   font-size: 14px;
   text-align: left;
 `;
@@ -358,7 +393,7 @@ const SharedImg = styled.div`
   width: 100%;
   display: block;
   position: relative;
-  background-color: #98c5e9;
+  background-color: #f9fafb;
   img {
     object-fit: contain;
     width: 100%;
@@ -423,36 +458,27 @@ const SocialActions = styled.div`
   }
 `;
 
-const Content = styled.div`
-  text-align: center;
-
-  & > img {
-    width: 30px;
-  }
-`;
-
 const CommentSection = styled.div`
-  background-color: #98c5e9;
-  padding: 16px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
 `;
 
 const CommentInput = styled.div`
   display: flex;
-  align-items: center;
-  margin-top: 10px;
-  border-bottom: 2px solid black;
-  padding-bottom: 10px;
+  margin-bottom: 10px;
+
   input {
     flex: 1;
+    padding: 5px;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin-right: 10px;
+    border-radius: 4px;
   }
+
   button {
-    padding: 10px 20px;
+    padding: 5px 10px;
+    margin-left: 5px;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
     background-color: #0073b1;
     color: white;
     cursor: pointer;
@@ -464,39 +490,34 @@ const CommentInput = styled.div`
 `;
 
 const CommentsList = styled.div`
-  margin-top: 16px;
+  max-height: 200px;
+  overflow-y: auto;
 `;
 
 const Comment = styled.div`
-  
-  text-align: left;
-  margin-bottom: 15px;
   display: flex;
-  div{
-    border: 3px solid #001838;
-    border-radius: 5px;
-    width: 100%;
+  margin-bottom: 10px;
+  img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
   }
-  img{
-    height: 40px;
-    border-radius:50%;
-    margin-right:5px;
-    margin-top:5px;
-    cursor: pointer;
+  div {
+    span {
+      font-weight: bold;
+      cursor: pointer;
+    }
+    p {
+      margin: 0;
+    }
   }
-  span {
-    cursor: pointer;
-    font-weight: bold;
-    //background-color: #001838;
-    padding: 3px;
-    color: #001838;
-    //border-bottom: 3px solid #001838;
-    
-  }
-  p {
-    padding: 3px;
-    padding-left: 10px;
-    margin: 4px 0 0;
+`;
+
+const Content = styled.div`
+  text-align: center;
+  & > img {
+    width: 30px;
   }
 `;
 
@@ -513,7 +534,9 @@ const mapDispatchToProps = (dispatch) => ({
   updateArticleLikes: (articleId, userEmail) =>
     dispatch(updateArticleLikes(articleId, userEmail)),
   addComment: (articleId, comment, userEmail, userImage) =>
-    dispatch(addCommentAPI(articleId, comment, userEmail, userImage)), // Updated to include username
+    dispatch(addCommentAPI(articleId, comment, userEmail, userImage)),
+  deleteArticle: (articleId) => dispatch(deleteArticleAPI(articleId)), // Add the delete action
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);
+

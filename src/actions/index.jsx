@@ -5,7 +5,8 @@ import {
   SET_LOADING_STATUS,
   GET_ARTICLES,
   SET_USER_DETAILS,
-  ADD_COMMENT
+  ADD_COMMENT,
+  DELETE_ARTICLE,
 } from "./actionType";
 
 export const setUser = (payload) => ({
@@ -17,6 +18,11 @@ export const getArticles = (payload) => ({
   type: GET_ARTICLES,
   payload: payload,
 });
+
+export const deleteArticle = (articleId) => ({
+  type: DELETE_ARTICLE,
+  articleId,
+})
 
 export const setLoading = (status) => ({
   type: SET_LOADING_STATUS,
@@ -159,6 +165,16 @@ export function postArticleAPI(payload) {
   };
 }
  
+export const deleteArticleAPI = (articleId) => {
+  return async (dispatch) => {
+    try {
+      await db.collection("articles").doc(articleId).delete();
+      dispatch(deleteArticle(articleId));
+    } catch (error) {
+      console.error("Error deleting article: ", error);
+    }
+  };
+};
 
 export const updateArticleLikes = (articleId, userEmail) => {
   return async (dispatch) => {

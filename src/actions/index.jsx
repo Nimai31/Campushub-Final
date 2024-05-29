@@ -7,11 +7,11 @@ import {
   SET_USER_DETAILS,
   ADD_COMMENT,
   DELETE_ARTICLE,
-  POST_PROJECT,
-  UPDATE_PROJECT,
+  ADD_PROJECT,
   GET_PROJECTS,
-  SET_CURRENT_PROJECT,
-  SET_SHOW_MODAL
+  ADD_PROJECT_MEMBER,
+  DELETE_PROJECT,
+  UPDATE_PROJECT,
 } from "./actionType";
 
 export const setUser = (payload) => ({
@@ -45,31 +45,34 @@ export const addComment = (articleId, comment) => ({
   comment,
 });
 
-export const postProject = (payload) => ({
-  type: POST_PROJECT,
-  payload,
-});
 
-export const updateProject = (id, payload) => ({
-  type: UPDATE_PROJECT,
-  id,
-  payload,
-});
-
-export const getProjects = (payload) => ({
-  type: GET_PROJECTS,
-  payload,
-});
-
-export const setShowModal = (status) => ({
-  type: SET_SHOW_MODAL,
-  status,
-});
-
-export const setCurrentProject = (project) => ({
-  type: SET_CURRENT_PROJECT,
+export const addProject = (project) => ({
+  type: ADD_PROJECT,
   project,
 });
+
+export const getProjects = (projects) => ({
+  type: GET_PROJECTS,
+  projects,
+});
+
+export const addProjectMember = (projectId, member) => ({
+  type: ADD_PROJECT_MEMBER,
+  projectId,
+  member,
+});
+
+export const deleteProject = (projectId) => ({
+  type: DELETE_PROJECT,
+  projectId,
+});
+
+export const updateProject = (projectId, projectData) => ({
+  type: UPDATE_PROJECT,
+  projectId,
+  projectData,
+});
+
 
 export function signInAPI() {
   return (dispatch) => {
@@ -351,22 +354,17 @@ export const addCommentAPI = (articleId, comment, userEmail, userImage) => {
   };
 };
 
-export const postProjectAPI = (payload) => {
-  return (dispatch) => {
-    const projectRef = db.collection("projects");
-    projectRef.add(payload).then(() => {
-      dispatch({ type: POST_PROJECT, payload });
-    });
-  };
-};
+export const addProjectAPI = (project) => {
+  return async (dispatch) => {
+    const projectRef = db.collection("projects").doc();
 
-export const updateProjectAPI = (id, payload) => {
-  return (dispatch) => {
-    console.log(id);
-    const projectRef = db.collection("projects").doc(id);
-    projectRef.update(payload).then(() => {
-      dispatch({ type: UPDATE_PROJECT, id, payload });
-    });
+    projectRef.set(project)
+      .then(() => {
+        dispatch(addProject({ id: projectRef.id, ...project }));
+      })
+      .catch((error) => {
+        console.error("Error adding project: ", error);
+      });
   };
 };
 
@@ -374,13 +372,61 @@ export const getProjectsAPI = () => {
   return (dispatch) => {
     db.collection("projects")
       .get()
-      .then((snapshot) => {
-        const payload = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        dispatch({ type: GET_PROJECTS, payload });
+      .then((querySnapshot) => {
+        const projects = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        dispatch(getProjects(projects));
       })
       .catch((error) => {
-        console.error("Error fetching projects:", error);
+        console.error("Error fetching projects: ", error);
       });
   };
 };
 
+export const addProjectMemberAPI = (projectId, member) => {
+  return async (dispatch) => {
+    const projectRef = db.collection("projects").doc(projectId);
+
+    const doc = await projectRef.get();
+    if (doc.exists) {
+      const projectData = doc.data();
+      const members = projectData.members || [];
+
+      members.push(member);
+
+      projectRef.update({ members })
+        .then(() => {
+          dispatch(addProjectMember(projectId, member));
+        })
+        .catch((error) => {
+          console.error("Error adding project member: ", error);
+        });
+    } else {
+      console.log("No such project!");
+    }
+  };
+};
+
+export const deleteProjectAPI = (projectId) => {
+  return async (dispatch) => {
+    try {
+      await db.collection("projects").doc(projectId).delete();
+      dispatch(deleteProject(projectId));
+    } catch (error) {
+      console.error("Error deleting project: ", error);
+    }
+  };
+};
+
+export const updateProjectAPI = (projectId, projectData) => {
+  return async (dispatch) => {
+    try {
+      await db.collection("projects").doc(projectId).update(projectData);
+      dispatch(updateProject(projectId, projectData));
+    } catch (error) {
+      console.error("Error updating project: ", error);
+    }
+  };
+};

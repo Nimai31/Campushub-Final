@@ -1,37 +1,50 @@
-import {
-    POST_PROJECT,
-    UPDATE_PROJECT,
-    GET_PROJECTS,
-  } from "../actions/actionType";
-  
-  const initialState = {
-    projects: [],
-    currentProject: null,
-  };
-  
-  const projectReducer = (state = initialState, action) => {
-    switch (action.type) {
-      case POST_PROJECT:
-        return {
-          ...state,
-          projects: [...state.projects, action.payload],
-        };
-      case UPDATE_PROJECT:
-        return {
-          ...state,
-          projects: state.projects.map((project) =>
-            project.id === action.id ? { ...project, ...action.payload } : project
-          ),
-        };
-      case GET_PROJECTS:
-        return {
-          ...state,
-          projects: action.payload,
-        };
-      default:
-        return state;
-    }
-  };
-  
-  export default projectReducer;
-  
+import { ADD_PROJECT, GET_PROJECTS, ADD_PROJECT_MEMBER, DELETE_PROJECT, UPDATE_PROJECT } from "../actions/actionType";
+
+const initialState = {
+  projects: [],
+};
+
+const projectReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case ADD_PROJECT:
+      return {
+        ...state,
+        projects: [...state.projects, action.project],
+      };
+    case GET_PROJECTS:
+      return {
+        ...state,
+        projects: action.projects,
+      };
+    case ADD_PROJECT_MEMBER:
+      return {
+        ...state,
+        projects: state.projects.map((project) =>
+          project.id === action.projectId
+            ? {
+                ...project,
+                roles: project.roles.map((role, index) =>
+                  index === action.roleIndex ? { ...role, name: action.memberName } : role
+                ),
+              }
+            : project
+        ),
+      };
+    case DELETE_PROJECT:
+      return {
+        ...state,
+        projects: state.projects.filter((project) => project.id !== action.projectId),
+      };
+    case UPDATE_PROJECT:
+      return {
+        ...state,
+        projects: state.projects.map((project) =>
+          project.id === action.projectId ? { ...project, ...action.projectData } : project
+        ),
+      };
+    default:
+      return state;
+  }
+};
+
+export default projectReducer;

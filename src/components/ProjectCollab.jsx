@@ -15,6 +15,7 @@ const ProjectCollab = (props) => {
   const [editingProjectId, setEditingProjectId] = useState(null);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     if (props.user) {
       props.getProjects();
@@ -47,8 +48,11 @@ const ProjectCollab = (props) => {
       roles: projectRoles,
       creator: props.user.email,
       timestamp: new Date().toISOString(),
+      username: props.user.displayName,
+      profilePic: props.user.photoURL,
     };
 
+    console.log(props.user.email);
     if (isEditing) {
       props.updateProject(editingProjectId, projectData);
     } else {
@@ -134,7 +138,9 @@ const ProjectCollab = (props) => {
             .map((project, key) => (
               <Project key={key}>
                 <ProjectDetails>
+                  <img src = {project.profilePic} alt="user.svg"/>
                   <h3>{project.name}</h3>
+                  <h3>{project.username}</h3>
                   <p>{project.description}</p>
                   <p>{formatDistanceToNow(new Date(project.timestamp))} ago</p>
                   <RoleList>

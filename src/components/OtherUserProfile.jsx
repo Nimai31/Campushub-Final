@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { fetchUserDetailsByEmail } from "../actions"; // Assuming you have an action to fetch user details by email
 import { connect } from "react-redux";
 import { getArticlesAPI } from "../actions";
-
+import { Navigate } from "react-router-dom";
 
 const OtherUserProfile = (props) => {
   const { email } = useParams();
@@ -16,10 +16,11 @@ const OtherUserProfile = (props) => {
     }
   }, [email]);
 
-  
-
   if (loading) {
     return <div>Loading...</div>;
+  }
+  if (!props.user) {
+    return <Navigate to="/" />;
   }
 
   return (
@@ -32,14 +33,19 @@ const OtherUserProfile = (props) => {
             <img src="/images/user.svg" alt=" " />
           )}
           <UserInfo>
-            <h2>{ props.userDetails.username}</h2>
-            <p>{ email }</p>
+            <h2>{props.userDetails.username}</h2>
+            <p>{email}</p>
             <h3>About : {props.userDetails.headline}</h3>
             <h3>Branch : {props.userDetails.branch}</h3>
             <h3>Semester : {props.userDetails.semester}</h3>
             {props.userDetails.links && (
-              <h3>Resume/ Coding Links : 
-                <a href={props.userDetails.links} target="_blank" rel="noopener noreferrer">
+              <h3>
+                Resume/ Coding Links :
+                <a
+                  href={props.userDetails.links}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {props.userDetails.links}
                 </a>
               </h3>
@@ -123,6 +129,7 @@ const UserInfo = styled.div`
 
 const mapStateToProps = (state) => {
   return {
+    user: state.userState.user,
     userDetails: state.userState.userDetails,
   };
 };

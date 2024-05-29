@@ -138,9 +138,11 @@ const ProjectCollab = (props) => {
             .map((project, key) => (
               <Project key={key}>
                 <ProjectDetails>
-                  <img src = {project.profilePic} alt="user.svg"/>
                   <h3>{project.name}</h3>
+                  <span onClick={() => {handleUserClick(props.user.email)}}>
+                  <img src = {project.profilePic} alt="user.svg"/>
                   <h3>{project.username}</h3>
+                  </span>
                   <p>{project.description}</p>
                   <p>{formatDistanceToNow(new Date(project.timestamp))} ago</p>
                   <RoleList>

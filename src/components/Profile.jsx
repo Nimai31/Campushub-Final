@@ -1,15 +1,22 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import { Navigate } from "react-router-dom";
 import UserDetailsModal from "./UserDetailsModal";
-import { fetchUserDetails, uploadCertificates, deleteCertificate } from "../actions";
+import {
+  fetchUserDetails,
+  uploadCertificates,
+  deleteCertificate,
+  addSkill,
+  deleteSkill
+} from "../actions";
 
 const Profile = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [certificates, setCertificates] = useState([]);
   const certificateInputRef = useRef(null);
   const [selectedCertificate, setSelectedCertificate] = useState(null);
+  const [skill, setSkill] = useState("");
 
   useEffect(() => {
     if (props.user) {
@@ -41,6 +48,17 @@ const Profile = (props) => {
   const handleCertificateDelete = (cert) => {
     props.deleteCertificate(props.user.email, cert);
     setSelectedCertificate(null);
+  };
+
+  const handleAddSkill = () => {
+    if (skill.trim() !== "") {
+      props.addSkill(props.user.email, skill.trim());
+      setSkill("");
+    }
+  };
+
+  const handleDeleteSkill = (skill) => {
+    props.deleteSkill(props.user.email, skill);
   };
 
   return (
@@ -91,7 +109,26 @@ const Profile = (props) => {
         </div>
       </ProfileCard>
       <ProfileCard>
-        <div>Skills</div>
+        <div>
+          <h3>Skills</h3>
+          <SkillInput>
+            <input
+              type="text"
+              placeholder="Add a skill"
+              value={skill}
+              onChange={(e) => setSkill(e.target.value)}
+            />
+            <button onClick={handleAddSkill}>Add Skill</button>
+          </SkillInput>
+          <SkillList>
+            {props.userDetails.skills && props.userDetails.skills.map((skill, index) => (
+              <SkillItem key={index}>
+                {skill}
+                <button onClick={() => handleDeleteSkill(skill)}>Delete</button>
+              </SkillItem>
+            ))}
+          </SkillList>
+        </div>
       </ProfileCard>
       {selectedCertificate && (
         <EnlargedCertificate>
@@ -150,6 +187,25 @@ const ProfileCard = styled(CommonCard)`
   }
 `;
 
+const ProfileActions = styled.div`
+  margin-top: 20px;
+
+  button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    color: #001838;
+    background-color: #fff;
+    border: 1px solid #001838;
+    border-radius: 20px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+`;
+
+
 const UserInfo = styled.div`
   text-align: center;
 
@@ -179,21 +235,31 @@ const UserInfo = styled.div`
   }
 `;
 
-const ProfileActions = styled.div`
+const SkillInput = styled.div`
+  display: flex;
+  align-items: center;
+  input {
+    padding: 10px;
+    margin-right: 10px;
+  }
+`;
+
+const SkillList = styled.div`
   margin-top: 20px;
+`;
 
+const SkillItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f3f3f3;
+  margin-bottom: 10px;
+  border-radius: 5px;
   button {
-    margin: 0 10px;
-    padding: 10px 20px;
-    color: #001838;
-    background-color: #fff;
-    border: 1px solid #001838;
-    border-radius: 20px;
+    background: none;
+    border: none;
+    color: red;
     cursor: pointer;
-
-    &:hover {
-      background-color: #f0f0f0;
-    }
   }
 `;
 
@@ -252,6 +318,8 @@ const mapDispatchToProps = (dispatch) => ({
   fetchUserDetails: (email) => dispatch(fetchUserDetails(email)),
   uploadCertificates: (email, files) => dispatch(uploadCertificates(email, files)),
   deleteCertificate: (email, certificate) => dispatch(deleteCertificate(email, certificate)),
+  addSkill: (email, skill) => dispatch(addSkill(email, skill)),
+  deleteSkill: (email, skill) => dispatch(deleteSkill(email, skill)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

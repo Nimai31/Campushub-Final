@@ -14,6 +14,8 @@ import {
   DELETE_PROJECT,
   UPDATE_PROJECT,
   SET_CERTIFICATES,
+  ADD_SKILL,
+  DELETE_SKILL
 } from "./actionType";
 
 export const setUser = (payload) => ({
@@ -479,6 +481,34 @@ export const deleteCertificate = (email, certificate) => {
       });
     } catch (error) {
       console.error("Error deleting certificate: ", error);
+    }
+  };
+};
+
+export const addSkill = (email, skill) => {
+  return async (dispatch) => {
+    try {
+      const userRef = db.collection("users").doc(email);
+      await userRef.update({
+        skills: firebase.firestore.FieldValue.arrayUnion(skill)
+      });
+      dispatch(fetchUserDetails(email));
+    } catch (error) {
+      console.error("Error adding skill: ", error);
+    }
+  };
+};
+
+export const deleteSkill = (email, skill) => {
+  return async (dispatch) => {
+    try {
+      const userRef = db.collection("users").doc(email);
+      await userRef.update({
+        skills: firebase.firestore.FieldValue.arrayRemove(skill)
+      });
+      dispatch(fetchUserDetails(email));
+    } catch (error) {
+      console.error("Error deleting skill: ", error);
     }
   };
 };

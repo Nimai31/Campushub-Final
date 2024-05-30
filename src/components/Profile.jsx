@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { connect } from "react-redux";
 import { Navigate } from "react-router-dom";
 import UserDetailsModal from "./UserDetailsModal";
-import { fetchUserDetails, uploadCertificates } from "../actions";
+import { fetchUserDetails, uploadCertificates, deleteCertificate } from "../actions";
 
 const Profile = (props) => {
   const [showModal, setShowModal] = useState(false);
@@ -36,6 +36,11 @@ const Profile = (props) => {
 
   const handleCertificateClick = (cert) => {
     setSelectedCertificate(cert);
+  };
+
+  const handleCertificateDelete = (cert) => {
+    props.deleteCertificate(props.user.email, cert);
+    setSelectedCertificate(null);
   };
 
   return (
@@ -91,7 +96,10 @@ const Profile = (props) => {
       {selectedCertificate && (
         <EnlargedCertificate>
           <img src={selectedCertificate.url} alt={selectedCertificate.name} />
-          <button onClick={() => setSelectedCertificate(null)}>Close</button>
+          <div>
+            <button onClick={() => setSelectedCertificate(null)}>Close</button>
+            <button onClick={() => handleCertificateDelete(selectedCertificate)}>Delete</button>
+          </div>
         </EnlargedCertificate>
       )}
       <UserDetailsModal
@@ -221,6 +229,15 @@ const EnlargedCertificate = styled.div`
     &:hover {
       background-color: #0056b3;
     }
+
+    &:nth-child(2) {
+      margin-left: 10px;
+      background-color: red;
+    }
+
+    &:nth-child(2):hover {
+      background-color: darkred;
+    }
   }
 `;
 
@@ -234,6 +251,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
   fetchUserDetails: (email) => dispatch(fetchUserDetails(email)),
   uploadCertificates: (email, files) => dispatch(uploadCertificates(email, files)),
+  deleteCertificate: (email, certificate) => dispatch(deleteCertificate(email, certificate)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

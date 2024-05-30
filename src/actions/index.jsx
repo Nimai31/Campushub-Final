@@ -81,6 +81,7 @@ export const setCertificates = (certificates) => ({
 });
 
 
+
 export function signInAPI() {
   return (dispatch) => {
     auth
@@ -458,5 +459,26 @@ export const uploadCertificates = (email, files) => {
     }).catch((error) => {
       console.error("Error uploading certificates: ", error);
     });
+  };
+};
+
+export const deleteCertificate = (email, certificate) => {
+  return async (dispatch) => {
+    try {
+      const userRef = db.collection("users").doc(email);
+      const certificateRef = storage.refFromURL(certificate.url);
+
+      await certificateRef.delete();
+
+      userRef.update({
+        certificates: firebase.firestore.FieldValue.arrayRemove(certificate)
+      }).then(() => {
+        dispatch(fetchUserDetails(email));
+      }).catch((error) => {
+        console.error("Error deleting certificate: ", error);
+      });
+    } catch (error) {
+      console.error("Error deleting certificate: ", error);
+    }
   };
 };

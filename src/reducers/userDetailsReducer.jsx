@@ -1,10 +1,11 @@
-import { SET_USER_DETAILS } from "../actions/actionType";
+import { SET_USER_DETAILS, SET_CERTIFICATES } from "../actions/actionType";
 
 const initialState = {
   headline: "",
   branch: "",
   semester: "",
   links: "",
+  certificates: [],
 };
 
 const userDetailsReducer = (state = initialState, action) => {
@@ -13,6 +14,11 @@ const userDetailsReducer = (state = initialState, action) => {
       return {
         ...state,
         ...action.payload,
+      };
+    case SET_CERTIFICATES:
+      return {
+        ...state,
+        certificates: action.certificates,
       };
     default:
       return state;

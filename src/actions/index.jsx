@@ -1,5 +1,6 @@
 import { auth, provider, storage } from "../firebase";
 import db from "../firebase";
+import firebase from "firebase/app"
 import {
   SET_USER,
   SET_LOADING_STATUS,
@@ -12,6 +13,7 @@ import {
   ADD_PROJECT_MEMBER,
   DELETE_PROJECT,
   UPDATE_PROJECT,
+  SET_CERTIFICATES,
 } from "./actionType";
 
 export const setUser = (payload) => ({
@@ -71,6 +73,11 @@ export const updateProject = (projectId, projectData) => ({
   type: UPDATE_PROJECT,
   projectId,
   projectData,
+});
+
+export const setCertificates = (certificates) => ({
+  type: SET_CERTIFICATES,
+  certificates,
 });
 
 
@@ -428,5 +435,28 @@ export const updateProjectAPI = (projectId, projectData) => {
     } catch (error) {
       console.error("Error updating project: ", error);
     }
+  };
+};
+
+export const uploadCertificates = (email, files) => {
+  return async (dispatch) => {
+    const storageRef = storage.ref();
+    const userRef = db.collection("users").doc(email);
+    const newCertificates = [];
+
+    for (const file of files) {
+      const fileRef = storageRef.child(`certificates/${email}/${file.name}`);
+      await fileRef.put(file);
+      const fileUrl = await fileRef.getDownloadURL();
+      newCertificates.push({ name: file.name, url: fileUrl });
+    }
+
+    userRef.update({
+      certificates: firebase.firestore.FieldValue.arrayUnion(...newCertificates)
+    }).then(() => {
+      dispatch(fetchUserDetails(email));
+    }).catch((error) => {
+      console.error("Error uploading certificates: ", error);
+    });
   };
 };

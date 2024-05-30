@@ -1,12 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import { Navigate } from "react-router-dom";
 import UserDetailsModal from "./UserDetailsModal";
-import { fetchUserDetails } from "../actions";
+import { fetchUserDetails, uploadCertificates } from "../actions";
 
 const Profile = (props) => {
   const [showModal, setShowModal] = useState(false);
+  const [certificates, setCertificates] = useState([]);
+  const certificateInputRef = useRef(null);
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
 
   useEffect(() => {
     if (props.user) {
@@ -14,8 +17,25 @@ const Profile = (props) => {
     }
   }, [props.user]);
 
+  useEffect(() => {
+    if (props.userDetails.certificates) {
+      setCertificates(props.userDetails.certificates);
+    }
+  }, [props.userDetails.certificates]);
+
   const toggleModal = () => {
     setShowModal(!showModal);
+  };
+
+  const handleCertificateUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      props.uploadCertificates(props.user.email, files);
+    }
+  };
+
+  const handleCertificateClick = (cert) => {
+    setSelectedCertificate(cert);
   };
 
   return (
@@ -24,9 +44,9 @@ const Profile = (props) => {
       <ProfileCard>
         <div>
           {props.user && props.user.photoURL ? (
-            <img src={props.user.photoURL} alt="User" />
+            <img className="profileImg" src={props.user.photoURL} alt="User" />
           ) : (
-            <img src="/images/user.svg" alt=" " />
+            <img className="profileImg" src="/images/user.svg" alt=" " />
           )}
           <UserInfo>
             <h2>{props.user ? props.user.displayName : "User Name"}</h2>
@@ -48,11 +68,32 @@ const Profile = (props) => {
         </ProfileActions>
       </ProfileCard>
       <ProfileCard>
-        <div>Certificates</div>
+        <div>
+          <h3>Certificates</h3>
+          <input
+            type="file"
+            multiple
+            ref={certificateInputRef}
+            style={{ display: "none" }}
+            onChange={handleCertificateUpload}
+          />
+          <button onClick={() => certificateInputRef.current.click()}>Upload Certificates</button>
+          {certificates.map((cert, index) => (
+            <div key={index} onClick={() => handleCertificateClick(cert)}>
+              <img className="certificate" src={cert.url} alt={cert.name} />
+            </div>
+          ))}
+        </div>
       </ProfileCard>
       <ProfileCard>
         <div>Skills</div>
       </ProfileCard>
+      {selectedCertificate && (
+        <EnlargedCertificate>
+          <img src={selectedCertificate.url} alt={selectedCertificate.name} />
+          <button onClick={() => setSelectedCertificate(null)}>Close</button>
+        </EnlargedCertificate>
+      )}
       <UserDetailsModal
         showModal={showModal ? "open" : "close"}
         handleClick={toggleModal}
@@ -89,10 +130,15 @@ const ProfileCard = styled(CommonCard)`
   min-height: 200px;
   margin-bottom: 50px;
 
-  img {
+  .profileImg {
     width: 100px;
     border-radius: 50%;
     margin-bottom: 20px;
+  }
+
+  .certificate {
+    height: 100px;
+    width: 150px;
   }
 `;
 
@@ -143,6 +189,41 @@ const ProfileActions = styled.div`
   }
 `;
 
+const EnlargedCertificate = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border: 3px solid #001838;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  img {
+    max-width: 90%;
+    max-height: 90%;
+    margin-bottom: 10px;
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #001838;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+`;
+
 const mapStateToProps = (state) => {
   return {
     user: state.userState.user,
@@ -152,6 +233,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   fetchUserDetails: (email) => dispatch(fetchUserDetails(email)),
+  uploadCertificates: (email, files) => dispatch(uploadCertificates(email, files)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

@@ -287,7 +287,7 @@ const Editor = styled.div`
   }
 
   input {
-    width: 100px;
+    width: 100%;
     height: 35px;
     font-size: 16px;
     margin-bottom: 20px;

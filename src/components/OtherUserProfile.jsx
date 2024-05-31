@@ -73,6 +73,13 @@ const OtherUserProfile = (props) => {
       </ProfileCard>
       <ProfileCard>
         <div>Skills</div>
+        <SkillList>
+            {props.userDetails.skills && props.userDetails.skills.map((skill, index) => (
+              <SkillItem key={index}>
+                {skill}
+              </SkillItem>
+            ))}
+          </SkillList>
       </ProfileCard>
       {selectedCertificate && (
         <EnlargedCertificate>
@@ -209,6 +216,25 @@ const EnlargedCertificate = styled.div`
     &:hover {
       background-color: #0056b3;
     }
+  }
+`;
+
+const SkillList = styled.div`
+  margin-top: 20px;
+`;
+
+const SkillItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f3f3f3;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  button {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
   }
 `;
 

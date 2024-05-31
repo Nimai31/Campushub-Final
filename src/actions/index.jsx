@@ -15,7 +15,9 @@ import {
   UPDATE_PROJECT,
   SET_CERTIFICATES,
   ADD_SKILL,
-  DELETE_SKILL
+  DELETE_SKILL,
+  GET_EVENTS, 
+  ADD_EVENT, DELETE_EVENT, UPDATE_EVENT
 } from "./actionType";
 
 export const setUser = (payload) => ({
@@ -82,7 +84,26 @@ export const setCertificates = (certificates) => ({
   certificates,
 });
 
+export const getEvents = (payload) => ({
+  type: GET_EVENTS,
+  events: payload,
+});
 
+export const addEvent = (payload) => ({
+  type: ADD_EVENT,
+  event: payload,
+});
+
+export const deleteEvent = (eventId) => ({
+  type: DELETE_EVENT,
+  eventId,
+});
+
+export const updateEvent = (eventId, eventData) => ({
+  type: UPDATE_EVENT,
+  eventId,
+  eventData,
+});
 
 export function signInAPI() {
   return (dispatch) => {
@@ -510,5 +531,40 @@ export const deleteSkill = (email, skill) => {
     } catch (error) {
       console.error("Error deleting skill: ", error);
     }
+  };
+};
+
+export const getEventsAPI = () => {
+  return (dispatch) => {
+    db.collection("events")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        const payload = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        dispatch(getEvents(payload));
+      });
+  };
+};
+
+export const addEventAPI = (eventData) => {
+  return (dispatch) => {
+    db.collection("events").add(eventData);
+    dispatch(addEvent(eventData));
+  };
+};
+
+export const deleteEventAPI = (eventId) => {
+  return (dispatch) => {
+    db.collection("events").doc(eventId).delete();
+    dispatch(deleteEvent(eventId));
+  };
+};
+
+export const updateEventAPI = (eventId, eventData) => {
+  return (dispatch) => {
+    db.collection("events").doc(eventId).update(eventData);
+    dispatch(updateEvent(eventId, eventData));
   };
 };

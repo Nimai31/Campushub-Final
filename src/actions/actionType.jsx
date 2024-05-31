@@ -13,3 +13,7 @@ export const UPLOAD_CERTIFICATES = "UPLOAD_CERTIFICATES";
 export const SET_CERTIFICATES = "SET_CERTIFICATES";
 export const ADD_SKILL = "ADD_SKILL";
 export const DELETE_SKILL = "DELETE_SKILL";
+export const ADD_EVENT = "ADD_EVENT";
+export const GET_EVENTS = "GET_EVENTS";
+export const DELETE_EVENT = "DELETE_EVENT";
+export const UPDATE_EVENT = "UPDATE_EVENT";

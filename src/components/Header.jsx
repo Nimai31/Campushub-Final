@@ -19,6 +19,11 @@ const Header = (props) => {
   const handleProjectClick = () => {
     navigate("/procollab")
   }
+
+  const handleEventClick = () => {
+    navigate("/events")
+  }
+
   return (
     <Container>
       <Content>
@@ -44,7 +49,7 @@ const Header = (props) => {
               </a>
             </NavList>
 
-            <NavList>
+            <NavList onClick={handleEventClick}>
               <a>
                 <img src="/images/nav-events.svg" class="events" alt="" />
                 <span>Event Hub</span>

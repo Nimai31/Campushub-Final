@@ -549,22 +549,73 @@ export const getEventsAPI = () => {
 };
 
 export const addEventAPI = (eventData) => {
-  return (dispatch) => {
-    db.collection("events").add(eventData);
-    dispatch(addEvent(eventData));
-  };
-};
+  return async (dispatch) => {
+    dispatch(setLoading(true));
 
-export const deleteEventAPI = (eventId) => {
-  return (dispatch) => {
-    db.collection("events").doc(eventId).delete();
-    dispatch(deleteEvent(eventId));
+    try {
+      const posterURL = eventData.poster ? await uploadFile(eventData.poster, 'event-posters') : "";
+      const brochureURL = eventData.brochure ? await uploadFile(eventData.brochure, 'event-brochures') : "";
+
+      const eventDataWithURLs = {
+        ...eventData,
+        poster: posterURL,
+        brochure: brochureURL,
+      };
+
+      await db.collection("events").add(eventDataWithURLs);
+      dispatch(addEvent(eventDataWithURLs));
+    } catch (error) {
+      console.error("Error adding event: ", error);
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 };
 
 export const updateEventAPI = (eventId, eventData) => {
+  return async (dispatch) => {
+    try {
+      const posterURL = eventData.poster && typeof eventData.poster !== "string" ? await uploadFile(eventData.poster, 'event-posters') : eventData.poster;
+      const brochureURL = eventData.brochure && typeof eventData.brochure !== "string" ? await uploadFile(eventData.brochure, 'event-brochures') : eventData.brochure;
+
+      const eventDataWithURLs = {
+        ...eventData,
+        poster: posterURL,
+        brochure: brochureURL,
+      };
+
+      await db.collection("events").doc(eventId).update(eventDataWithURLs);
+      dispatch(updateEvent(eventId, eventDataWithURLs));
+    } catch (error) {
+      console.error("Error updating event: ", error);
+    }
+  };
+};
+
+const uploadFile = (file, path) => {
+  return new Promise((resolve, reject) => {
+    const uploadTask = storage.ref(`${path}/${file.name}`).put(file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        
+      },
+      (error) => {
+        reject(error);
+      },
+      () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          resolve(downloadURL);
+        });
+      }
+    );
+  });
+};
+
+export const deleteEventAPI = (eventId) => {
   return (dispatch) => {
-    db.collection("events").doc(eventId).update(eventData);
-    dispatch(updateEvent(eventId, eventData));
+    db.collection("events").doc(eventId).delete()
+      .then(() => dispatch(deleteEvent(eventId)))
+      .catch((error) => console.error("Error deleting event: ", error));
   };
 };

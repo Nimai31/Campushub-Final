@@ -28,19 +28,12 @@ const EventCollab = (props) => {
     navigate(`/user/${email}`);
   };
 
-  const handleEventSubmit = async (eventData) => {
+  const handleEventSubmit = (eventData) => {
     eventData.userName = props.user.displayName;
     eventData.profilePic = props.user.photoURL;
     eventData.email = props.user.email;
     eventData.creator = props.user.email;
     eventData.timestamp = new Date().toISOString();
-
-    if (eventData.poster && typeof eventData.poster !== "string") {
-      eventData.poster = await uploadFile(eventData.poster);
-    }
-    if (eventData.brochure && typeof eventData.brochure !== "string") {
-      eventData.brochure = await uploadFile(eventData.brochure);
-    }
 
     if (isEditing) {
       props.updateEvent(editingEvent.id, eventData);
@@ -49,11 +42,6 @@ const EventCollab = (props) => {
     }
 
     resetForm();
-  };
-
-  const uploadFile = async (file) => {
-
-    return URL.createObjectURL(file);
   };
 
   const handleEditEvent = (event) => {

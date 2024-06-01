@@ -68,6 +68,10 @@ const EventCollab = (props) => {
     }
   };
 
+  const filteredEvents = props.events.filter((event) =>
+    event.name.toLowerCase().includes(props.searchQuery.toLowerCase())
+  );
+
   if (!props.user) {
     return <Navigate to="/" />;
   }
@@ -89,7 +93,7 @@ const EventCollab = (props) => {
         <NoEventsMessage>There are no events</NoEventsMessage>
       ) : (
         <Content>
-          {props.events
+          {filteredEvents
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
             .map((event, key) => (
               <Event key={key}>
@@ -278,6 +282,7 @@ const mapStateToProps = (state) => {
     loading: state.eventState.loading,
     user: state.userState.user,
     events: state.eventState.events,
+    searchQuery: state.searchState.searchQuery,
   };
 };
 
@@ -286,7 +291,7 @@ const mapDispatchToProps = (dispatch) => ({
   addEvent: (eventData) => dispatch(addEventAPI(eventData)),
   deleteEvent: (eventId) => dispatch(deleteEventAPI(eventId)),
   updateEvent: (eventId, eventData) =>
-    dispatch(updateEventAPI(eventId, eventData)),
+    dispatch(updateEventAPI(eventId, eventData)),  
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EventCollab);

@@ -7,6 +7,7 @@ import {
 
 const initialState = {
   events: [],
+  searchQuery: "",
 };
 
 const eventReducer = (state = initialState, action) => {

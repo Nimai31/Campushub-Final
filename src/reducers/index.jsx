@@ -4,6 +4,7 @@ import userReducer from "./userReducer";
 import userDetailsReducer from "./userDetailsReducer";
 import projectReducer from "./projectReducer";
 import eventReducer from "./eventReducer";
+import searchReducer from "./searchReducer";
 
 const rootReducer = combineReducers({
   articleState: articleReducer,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   userDetailsState: userDetailsReducer,
   projectState: projectReducer,
   eventState: eventReducer,
+  searchState: searchReducer,
 });
 
 export default rootReducer;

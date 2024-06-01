@@ -1,10 +1,17 @@
 import { connect } from "react-redux";
 import styled from "styled-components";
-import { signOutAPI } from "../actions";
+import { signOutAPI, setSearchQuery } from "../actions";
 import { useNavigate } from "react-router-dom";
+import {useState} from "react";
 
 const Header = (props) => {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    props.setSearchQuery(e.target.value);
+  };
 
   const handleProfileClick = () => {
     navigate("/profile");
@@ -34,7 +41,12 @@ const Header = (props) => {
         </Logo>
         <Search>
           <div>
-            <input type="text" placeholder="Search" />
+          <input
+              type="text"
+              placeholder="Search "
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
           </div>
           <SearchIcon>
             <img src="/images/search-icon.svg" alt="" />
@@ -348,5 +360,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   SignOut: () => dispatch(signOutAPI()),
+  setSearchQuery: (query) => dispatch(setSearchQuery(query)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

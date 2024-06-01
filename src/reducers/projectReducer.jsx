@@ -2,6 +2,7 @@ import { ADD_PROJECT, GET_PROJECTS, ADD_PROJECT_MEMBER, DELETE_PROJECT, UPDATE_P
 
 const initialState = {
   projects: [],
+  searchQuery: "",
 };
 
 const projectReducer = (state = initialState, action) => {
@@ -42,6 +43,7 @@ const projectReducer = (state = initialState, action) => {
           project.id === action.projectId ? { ...project, ...action.projectData } : project
         ),
       };
+
     default:
       return state;
   }

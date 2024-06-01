@@ -20,6 +20,7 @@ import {
   ADD_EVENT,
   DELETE_EVENT,
   UPDATE_EVENT,
+  SET_SEARCH_QUERY,
 } from "./actionType";
 
 export const setUser = (payload) => ({
@@ -105,6 +106,12 @@ export const updateEvent = (eventId, eventData) => ({
   eventId,
   eventData,
 });
+
+export const setSearchQuery = (query) => ({
+  type: SET_SEARCH_QUERY,
+  query,
+});
+
 
 export function signInAPI() {
   return (dispatch) => {

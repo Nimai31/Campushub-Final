@@ -155,6 +155,7 @@ const ProjectCollab = (props) => {
         <p>There are no projects</p>
       ) : (
         <Content>
+          {props.loading && <img src="/images/spin-loader.svg" className=".loading" />}
           {filteredProjects
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
             .map((project, key) => (
@@ -253,6 +254,10 @@ const RoleInput = styled.div`
 
 const Content = styled.div`
   text-align: center;
+  .loading{
+    height: 30px;
+    width: 30px;
+  }
 `;
 
 const Project = styled.div`

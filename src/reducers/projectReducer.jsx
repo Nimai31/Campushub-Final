@@ -1,4 +1,4 @@
-import { ADD_PROJECT, GET_PROJECTS, ADD_PROJECT_MEMBER, DELETE_PROJECT, UPDATE_PROJECT } from "../actions/actionType";
+import { ADD_PROJECT, GET_PROJECTS, ADD_PROJECT_MEMBER, DELETE_PROJECT, UPDATE_PROJECT,SET_LOADING_STATUS } from "../actions/actionType";
 
 const initialState = {
   projects: [],
@@ -7,6 +7,11 @@ const initialState = {
 
 const projectReducer = (state = initialState, action) => {
   switch (action.type) {
+    case SET_LOADING_STATUS:
+      return {
+        ...state,
+        loading: action.status,
+      };
     case ADD_PROJECT:
       return {
         ...state,

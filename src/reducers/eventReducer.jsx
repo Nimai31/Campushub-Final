@@ -3,6 +3,7 @@ import {
   GET_EVENTS,
   DELETE_EVENT,
   UPDATE_EVENT,
+  SET_LOADING_STATUS,
 } from "../actions/actionType";
 
 const initialState = {
@@ -12,6 +13,11 @@ const initialState = {
 
 const eventReducer = (state = initialState, action) => {
   switch (action.type) {
+    case SET_LOADING_STATUS:
+      return {
+        ...state,
+        loading: action.status,
+      };
     case ADD_EVENT:
       // Ensure no duplicate events are added
       if (state.events.find(event => event.id === action.event.id)) {

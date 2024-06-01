@@ -93,6 +93,7 @@ const EventCollab = (props) => {
         <NoEventsMessage>There are no events</NoEventsMessage>
       ) : (
         <Content>
+          {props.loading && <img src="/images/spin-loader.svg" className="loading"/>}
           {filteredEvents
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
             .map((event, key) => (
@@ -174,6 +175,10 @@ const NoEventsMessage = styled.p`
 
 const Content = styled.div`
   text-align: center;
+  .loading{
+    height: 30px;
+    width: 30px;
+  }
 `;
 
 const Event = styled.div`

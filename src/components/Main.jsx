@@ -539,6 +539,7 @@ const mapStateToProps = (state) => {
     loading: state.articleState.loading,
     user: state.userState.user,
     articles: state.articleState.articles,
+    searchQuery: state.searchState.searchQuery,
   };
 };
 

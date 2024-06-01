@@ -75,7 +75,9 @@ const EventCollab = (props) => {
   return (
     <Container>
       <EventBox>
-        <CreateEventButton onClick={toggleEventForm}>Create Event</CreateEventButton>
+        <CreateEventButton onClick={toggleEventForm}>
+          Create Event
+        </CreateEventButton>
         <EventModal
           show={showEventForm}
           onClose={resetForm}
@@ -98,24 +100,40 @@ const EventCollab = (props) => {
                   </UserInfo>
                   <EventName>{event.name}</EventName>
                   <EventDescription>{event.description}</EventDescription>
-                  <EventTime>{formatDistanceToNow(new Date(event.timestamp))} ago</EventTime>
+                  <EventTime>
+                    {formatDistanceToNow(new Date(event.timestamp))} ago
+                  </EventTime>
                   <EventDate>Date: {event.date}</EventDate>
                   <EventLocation>Location: {event.location}</EventLocation>
-                  {event.poster && <EventPoster src={event.poster} alt="Event Poster" />}
+                  {event.poster && (
+                    <EventPoster src={event.poster} alt="Event Poster" />
+                  )}
                   {event.brochure && (
-                    <EventBrochure href={event.brochure} target="_blank" rel="noopener noreferrer">
+                    <EventBrochure
+                      href={event.brochure}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       View Brochure
                     </EventBrochure>
                   )}
                   {event.registrationLink && (
-                    <EventRegistrationLink href={event.registrationLink} target="_blank" rel="noopener noreferrer">
+                    <EventRegistrationLink
+                      href={event.registrationLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       Register Here
                     </EventRegistrationLink>
                   )}
                   {event.creator === props.user.email && (
                     <Buttons>
-                      <EditButton onClick={() => handleEditEvent(event)}>Edit</EditButton>
-                      <DeleteButton onClick={() => handleDeleteEvent(event.id)}>Delete</DeleteButton>
+                      <EditButton onClick={() => handleEditEvent(event)}>
+                        Edit
+                      </EditButton>
+                      <DeleteButton onClick={() => handleDeleteEvent(event.id)}>
+                        Delete
+                      </DeleteButton>
                     </Buttons>
                   )}
                 </EventDetails>
@@ -267,7 +285,8 @@ const mapDispatchToProps = (dispatch) => ({
   getEvents: () => dispatch(getEventsAPI()),
   addEvent: (eventData) => dispatch(addEventAPI(eventData)),
   deleteEvent: (eventId) => dispatch(deleteEventAPI(eventId)),
-  updateEvent: (eventId, eventData) => dispatch(updateEventAPI(eventId, eventData)),
+  updateEvent: (eventId, eventData) =>
+    dispatch(updateEventAPI(eventId, eventData)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EventCollab);

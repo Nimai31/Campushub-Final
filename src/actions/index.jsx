@@ -1,6 +1,6 @@
 import { auth, provider, storage } from "../firebase";
 import db from "../firebase";
-import firebase from "firebase/app"
+import firebase from "firebase/app";
 import {
   SET_USER,
   SET_LOADING_STATUS,
@@ -16,8 +16,10 @@ import {
   SET_CERTIFICATES,
   ADD_SKILL,
   DELETE_SKILL,
-  GET_EVENTS, 
-  ADD_EVENT, DELETE_EVENT, UPDATE_EVENT
+  GET_EVENTS,
+  ADD_EVENT,
+  DELETE_EVENT,
+  UPDATE_EVENT,
 } from "./actionType";
 
 export const setUser = (payload) => ({
@@ -33,7 +35,7 @@ export const getArticles = (payload) => ({
 export const deleteArticle = (articleId) => ({
   type: DELETE_ARTICLE,
   articleId,
-})
+});
 
 export const setLoading = (status) => ({
   type: SET_LOADING_STATUS,
@@ -50,7 +52,6 @@ export const addComment = (articleId, comment) => ({
   articleId,
   comment,
 });
-
 
 export const addProject = (project) => ({
   type: ADD_PROJECT,
@@ -207,7 +208,8 @@ export function postArticleAPI(payload) {
         likes: { count: 0, users: [] }, // Initialize likes field
       });
       dispatch(setLoading(false));
-    }else if (payload.description) { // New condition for text-only posts
+    } else if (payload.description) {
+      // New condition for text-only posts
       db.collection("articles").add({
         actor: {
           description: payload.user.email,
@@ -225,11 +227,13 @@ export function postArticleAPI(payload) {
       dispatch(setLoading(false));
     } else {
       dispatch(setLoading(false));
-      console.log("Post must contain at least an image, video, or text description.");
+      console.log(
+        "Post must contain at least an image, video, or text description."
+      );
     }
   };
 }
- 
+
 export const deleteArticleAPI = (articleId) => {
   return async (dispatch) => {
     try {
@@ -255,7 +259,8 @@ export const updateArticleLikes = (articleId, userEmail) => {
         likes.count += 1;
         likes.users.push(userEmail);
 
-        articleRef.update({ likes })
+        articleRef
+          .update({ likes })
           .then(() => {
             dispatch(getArticlesAPI()); // Refresh articles
           })
@@ -271,7 +276,6 @@ export const updateArticleLikes = (articleId, userEmail) => {
   };
 };
 
-
 export function getArticlesAPI() {
   return (dispatch) => {
     let payload;
@@ -281,14 +285,13 @@ export function getArticlesAPI() {
       .onSnapshot((snapshot) => {
         payload = snapshot.docs.map((doc) => ({
           id: doc.id, // Include the document ID
-          ...doc.data()
+          ...doc.data(),
         }));
         console.log(payload); // For debugging
         dispatch(getArticles(payload));
       });
   };
 }
-
 
 export const fetchUserDetails = (email) => {
   return (dispatch) => {
@@ -308,10 +311,14 @@ export const fetchUserDetails = (email) => {
   };
 };
 
-export const updateUserDetailsAPI = (email, profilePicture, username, details) => {
+export const updateUserDetailsAPI = (
+  email,
+  profilePicture,
+  username,
+  details
+) => {
   return (dispatch) => {
-
-    const userDetails = {...details, profilePicture, username};
+    const userDetails = { ...details, profilePicture, username };
 
     db.collection("users")
       .doc(email)
@@ -331,7 +338,8 @@ export const fetchUserDetailsByEmail = (email) => {
       let userDetails = {};
 
       // Fetch user details from the "users" collection
-      await db.collection("users")
+      await db
+        .collection("users")
         .doc(email)
         .get()
         .then((doc) => {
@@ -343,7 +351,7 @@ export const fetchUserDetailsByEmail = (email) => {
         });
 
       dispatch({
-        type: 'SET_USER_DETAILS',
+        type: "SET_USER_DETAILS",
         payload: userDetails,
       });
     } catch (error) {
@@ -355,7 +363,7 @@ export const fetchUserDetailsByEmail = (email) => {
 export const addCommentAPI = (articleId, comment, userEmail, userImage) => {
   return async (dispatch) => {
     const userRef = db.collection("users").doc(userEmail);
-    
+
     try {
       const userDoc = await userRef.get();
       if (userDoc.exists) {
@@ -372,7 +380,9 @@ export const addCommentAPI = (articleId, comment, userEmail, userImage) => {
           comments.push({ userEmail, username, comment, userImage });
 
           await articleRef.update({ comments });
-          dispatch(addComment(articleId, { userEmail, username, comment, userImage }));
+          dispatch(
+            addComment(articleId, { userEmail, username, comment, userImage })
+          );
         } else {
           console.log("No such document!");
         }
@@ -389,7 +399,8 @@ export const addProjectAPI = (project) => {
   return async (dispatch) => {
     const projectRef = db.collection("projects").doc();
 
-    projectRef.set(project)
+    projectRef
+      .set(project)
       .then(() => {
         dispatch(addProject({ id: projectRef.id, ...project }));
       })
@@ -427,7 +438,8 @@ export const addProjectMemberAPI = (projectId, member) => {
 
       members.push(member);
 
-      projectRef.update({ members })
+      projectRef
+        .update({ members })
         .then(() => {
           dispatch(addProjectMember(projectId, member));
         })
@@ -475,13 +487,18 @@ export const uploadCertificates = (email, files) => {
       newCertificates.push({ name: file.name, url: fileUrl });
     }
 
-    userRef.update({
-      certificates: firebase.firestore.FieldValue.arrayUnion(...newCertificates)
-    }).then(() => {
-      dispatch(fetchUserDetails(email));
-    }).catch((error) => {
-      console.error("Error uploading certificates: ", error);
-    });
+    userRef
+      .update({
+        certificates: firebase.firestore.FieldValue.arrayUnion(
+          ...newCertificates
+        ),
+      })
+      .then(() => {
+        dispatch(fetchUserDetails(email));
+      })
+      .catch((error) => {
+        console.error("Error uploading certificates: ", error);
+      });
   };
 };
 
@@ -493,13 +510,16 @@ export const deleteCertificate = (email, certificate) => {
 
       await certificateRef.delete();
 
-      userRef.update({
-        certificates: firebase.firestore.FieldValue.arrayRemove(certificate)
-      }).then(() => {
-        dispatch(fetchUserDetails(email));
-      }).catch((error) => {
-        console.error("Error deleting certificate: ", error);
-      });
+      userRef
+        .update({
+          certificates: firebase.firestore.FieldValue.arrayRemove(certificate),
+        })
+        .then(() => {
+          dispatch(fetchUserDetails(email));
+        })
+        .catch((error) => {
+          console.error("Error deleting certificate: ", error);
+        });
     } catch (error) {
       console.error("Error deleting certificate: ", error);
     }
@@ -511,7 +531,7 @@ export const addSkill = (email, skill) => {
     try {
       const userRef = db.collection("users").doc(email);
       await userRef.update({
-        skills: firebase.firestore.FieldValue.arrayUnion(skill)
+        skills: firebase.firestore.FieldValue.arrayUnion(skill),
       });
       dispatch(fetchUserDetails(email));
     } catch (error) {
@@ -525,7 +545,7 @@ export const deleteSkill = (email, skill) => {
     try {
       const userRef = db.collection("users").doc(email);
       await userRef.update({
-        skills: firebase.firestore.FieldValue.arrayRemove(skill)
+        skills: firebase.firestore.FieldValue.arrayRemove(skill),
       });
       dispatch(fetchUserDetails(email));
     } catch (error) {
@@ -534,27 +554,17 @@ export const deleteSkill = (email, skill) => {
   };
 };
 
-export const getEventsAPI = () => {
-  return (dispatch) => {
-    db.collection("events")
-      .orderBy("timestamp", "desc")
-      .onSnapshot((snapshot) => {
-        const payload = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        dispatch(getEvents(payload));
-      });
-  };
-};
-
 export const addEventAPI = (eventData) => {
   return async (dispatch) => {
     dispatch(setLoading(true));
 
     try {
-      const posterURL = eventData.poster ? await uploadFile(eventData.poster, 'event-posters') : "";
-      const brochureURL = eventData.brochure ? await uploadFile(eventData.brochure, 'event-brochures') : "";
+      const posterURL = eventData.poster
+        ? await uploadFile(eventData.poster, "event-posters")
+        : "";
+      const brochureURL = eventData.brochure
+        ? await uploadFile(eventData.brochure, "event-brochures")
+        : "";
 
       const eventDataWithURLs = {
         ...eventData,
@@ -575,8 +585,14 @@ export const addEventAPI = (eventData) => {
 export const updateEventAPI = (eventId, eventData) => {
   return async (dispatch) => {
     try {
-      const posterURL = eventData.poster && typeof eventData.poster !== "string" ? await uploadFile(eventData.poster, 'event-posters') : eventData.poster;
-      const brochureURL = eventData.brochure && typeof eventData.brochure !== "string" ? await uploadFile(eventData.brochure, 'event-brochures') : eventData.brochure;
+      const posterURL =
+        eventData.poster && typeof eventData.poster !== "string"
+          ? await uploadFile(eventData.poster, "event-posters")
+          : eventData.poster;
+      const brochureURL =
+        eventData.brochure && typeof eventData.brochure !== "string"
+          ? await uploadFile(eventData.brochure, "event-brochures")
+          : eventData.brochure;
 
       const eventDataWithURLs = {
         ...eventData,
@@ -597,9 +613,7 @@ const uploadFile = (file, path) => {
     const uploadTask = storage.ref(`${path}/${file.name}`).put(file);
     uploadTask.on(
       "state_changed",
-      (snapshot) => {
-        
-      },
+      (snapshot) => {},
       (error) => {
         reject(error);
       },
@@ -614,8 +628,25 @@ const uploadFile = (file, path) => {
 
 export const deleteEventAPI = (eventId) => {
   return (dispatch) => {
-    db.collection("events").doc(eventId).delete()
+    db.collection("events")
+      .doc(eventId)
+      .delete()
       .then(() => dispatch(deleteEvent(eventId)))
       .catch((error) => console.error("Error deleting event: ", error));
+  };
+};
+
+export const getEventsAPI = () => {
+  return (dispatch) => {
+    db.collection("events").onSnapshot((snapshot) => {
+      const events = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      dispatch({
+        type: GET_EVENTS,
+        events,
+      });
+    });
   };
 };

@@ -163,4 +163,4 @@ const SubmitButton = styled.button`
   align-self: flex-end;
 `;
 
-export default EventModal;
+export default EventModal

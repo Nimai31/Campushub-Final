@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import PostModal from "./PostModal";
 import { connect } from "react-redux";
-import { getArticlesAPI, updateArticleLikes, addCommentAPI, deleteArticleAPI } from "../actions"; // Import the new action
+import { getArticlesAPI, updateArticleLikes, addCommentAPI, deleteArticleAPI } from "../actions"; 
 import ReactPlayer from "react-player";
 import { useNavigate } from "react-router-dom";
 

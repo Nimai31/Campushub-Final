@@ -76,7 +76,7 @@ const EventCollab = (props) => {
     return <Navigate to="/" />;
   }
 
-  return (
+    return (
     <Container>
       <EventBox>
         <CreateEventButton onClick={toggleEventForm}>
@@ -89,7 +89,7 @@ const EventCollab = (props) => {
           existingEvent={editingEvent}
         />
       </EventBox>
-      {props.events.length === 0 ? (
+      {filteredEvents.length === 0 ? (
         <NoEventsMessage>There are no events</NoEventsMessage>
       ) : (
         <Content>
@@ -97,7 +97,7 @@ const EventCollab = (props) => {
           {filteredEvents
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
             .map((event, key) => (
-              <Event key={key}>
+              <Event key={event.id}>
                 <EventDetails>
                   <UserInfo onClick={() => handleUserClick(event.email)}>
                     <UserName>{event.userName}</UserName>
@@ -109,7 +109,10 @@ const EventCollab = (props) => {
                     {formatDistanceToNow(new Date(event.timestamp))} ago
                   </EventTime>
                   <EventDate>Date: {event.date}</EventDate>
+                  <EventTime>Time: {event.time}</EventTime>
                   <EventLocation>Location: {event.location}</EventLocation>
+                  <EventClub>Club Name: {event.clubName}</EventClub>
+                  <EventDuration>Duration: {event.duration}</EventDuration>
                   {event.poster && (
                     <EventPoster src={event.poster} alt="Event Poster" />
                   )}
@@ -184,7 +187,7 @@ const Content = styled.div`
 const Event = styled.div`
   margin: 10px 0;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #98c5e9;
   border: 1px solid #ddd;
   border-radius: 8px;
 `;
@@ -281,6 +284,15 @@ const DeleteButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
 `;
+const EventClub = styled.p`
+  margin: 5px 0;
+  color: #777;
+`;
+
+const EventDuration = styled.p`
+  margin: 5px 0;
+  color: #777;
+`;
 
 const mapStateToProps = (state) => {
   return {
@@ -296,7 +308,7 @@ const mapDispatchToProps = (dispatch) => ({
   addEvent: (eventData) => dispatch(addEventAPI(eventData)),
   deleteEvent: (eventId) => dispatch(deleteEventAPI(eventId)),
   updateEvent: (eventId, eventData) =>
-    dispatch(updateEventAPI(eventId, eventData)),  
+    dispatch(updateEventAPI(eventId, eventData)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EventCollab);

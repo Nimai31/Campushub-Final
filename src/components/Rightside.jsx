@@ -1,38 +1,63 @@
-import styled from "styled-components";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
+import { getEventsAPI } from '../actions';
+import { useNavigate } from 'react-router-dom';
 
 const Rightside = (props) => {
+  const dispatch = useDispatch();
+  const events = useSelector((state) => state.eventState.events);
+  const navigate = useNavigate();
+  const [todayEvents, setTodayEvents] = useState([]);
+
+  useEffect(() => {
+    dispatch(getEventsAPI());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]; 
+    console.log("Today's date:", today);
+    console.log("Fetched events:", events);
+    const filteredEvents = events.filter(event => {
+      const eventDate = new Date(event.date).toISOString().split('T')[0];
+      console.log("Event date:", eventDate);
+      return eventDate === today;
+    });
+    console.log("Filtered events for today:", filteredEvents);
+    setTodayEvents(filteredEvents);
+  }, [events]);
+
+  const handleExploreEventClick = () => {
+    navigate('/events')
+  }
+
   return (
     <Container>
       <FollowCard>
         <Title>
-          <h2>Add to your club feed</h2>
+          <h2>Today's Events</h2>
           <img src="/images/feed-icon.svg" alt="" />
         </Title>
-
         <FeedList>
-          <li>
-            <a>
-              <Avatar />
-            </a>
-            <div>
-              <span>#Club 1</span>
-              <button>Follow</button>
-            </div>
-          </li>
-          <li>
-            <a>
-              <Avatar />
-            </a>
-            <div>
-              <span>#Club 2</span>
-              <button>Follow</button>
-            </div>
-          </li>
+          {todayEvents.length > 0 ? (
+            todayEvents.map(event => (
+              <li key={event.id}>
+                <EventItem>
+                  <Avatar />
+                  <EventInfo>
+                    <span>{event.name}</span>
+                    <span>{event.time}</span>
+                  </EventInfo>
+                </EventItem>
+              </li>
+            ))
+          ) : (
+            <p>No events for today</p>
+          )}
         </FeedList>
-
-        <Recommendation>
-          Explore more clubs
-          <img src="/images/right-icon.svg" alt="" />
+        <Recommendation onClick={handleExploreEventClick}>
+          Explore more events
+          <img src="/images/right-icon.svg" alt="" onClick={handleExploreEventClick} />
         </Recommendation>
       </FollowCard>
     </Container>
@@ -73,37 +98,28 @@ const FeedList = styled.ul`
     margin: 12px 0;
     position: relative;
     font-size: 14px;
-    & > div {
-      display: flex;
-      flex-direction: column;
-    }
-
-    button {
-      background-color: transparent;
-      color: rgba(0, 0, 0, 0.6);
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
-      padding: 16px;
-      align-items: center;
-      border-radius: 15px;
-      box-sizing: border-box;
-      font-weight: 600;
-      display: inline-flex;
-      justify-content: center;
-      max-height: 32px;
-      max-width: 480px;
-      text-align: center;
-      outline: none;
-    }
   }
 `;
 
+const EventItem = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const EventInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-left: 5px;
+  margin-bottom: 10px;
+`;
+
 const Avatar = styled.div`
-  background-image: url("https://static-exp1.licdn.com/sc/h/1b4vl1r54ijmrmcyxzoidwmxs");
+  background-image: url("images/today's-event.svg");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   margin-right: 8px;
 `;
 

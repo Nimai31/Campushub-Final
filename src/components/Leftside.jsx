@@ -1,22 +1,43 @@
 import styled from "styled-components";
 import { connect } from "react-redux";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getProjectsAPI } from "../actions";
 
 const Leftside = (props) => {
+  const [showProjects, setShowProjects] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!props.projects.length) {
+      props.getProjects();
+    }
+  }, []);
+
+  const handleExploreProjects = () => {
+    setShowProjects(!showProjects);
+  };
+
+  const handleDiscoverMoreClick = () => {
+    navigate('/procollab');
+  };
+
   return (
     <Container>
       <ArtCard>
         <UserInfo>
           <CardBackground />
           <a>
-            
             <Link>
-            <a>
-                {props.user && props.user.photoURL?(
-                <img src={props.user.photoURL} alt=""/>
-              ):(
-                <img src="/images/user.svg" alt="" />
+              <a>
+                {props.user && props.user.photoURL ? (
+                  <img src={props.user.photoURL} alt="" />
+                ) : (
+                  <img src="/images/user.svg" alt="" />
                 )}
-              </a>Welcome, {props.user ? props.user.displayName : "there"}</Link>
+              </a>
+              Welcome, {props.user ? props.user.displayName : "there"}
+            </Link>
           </a>
           <a>
             <AddPhotoText>Add a photo</AddPhotoText>
@@ -40,18 +61,26 @@ const Leftside = (props) => {
       </ArtCard>
 
       <CommunityCard>
-        <a>
-          <span>Groups</span>
-        </a>
+        
         <a>
           <span>
-            Events
-            <img src="/images/plus-icon.svg" alt="" />
+            Explore Projects
+            <img onClick={handleExploreProjects} src="/images/plus-icon.svg" alt="" />
           </span>
         </a>
-        <a>
-          <span>Discover more</span>
+        {showProjects && (
+          <ProjectList>
+          {props.projects.slice(0, 5).map((project) => (
+            <ProjectItem key={project.id}>
+              {project.name}
+            </ProjectItem>
+          ))}
+          <a onClick={handleDiscoverMoreClick}>
+          <span className="dismore">Discover more</span>
         </a>
+        </ProjectList>
+          
+        )}
       </CommunityCard>
     </Container>
   );
@@ -92,29 +121,6 @@ const CardBackground = styled.div`
   align-items: center;
 `;
 
-// const Photo = styled.div`
-//   box-shadow: none;
-//   background-image: url("/images/photo.svg");
-//   width: 78px;
-//   height: 72px;
-//   box-sizing: border-box;
-//   background-clip: content-box;
-//   background-color: white;
-//   background-position: center;
-//   background-size: 60%;
-//   background-repeat: no-repeat;
-//   border: 3px solid #001838;
-//   margin: -38px auto 12px;
-//   border-radius: 70%;
-//   img{
-//     max-height:80px;
-//     border-radius: 60%;
-//     margin-bottom: 20px;
-    
-//     padding-top: ;
-//   }
-// `;
-
 const Link = styled.div`
   font-size: 16px;
   line-height: 1.5;
@@ -123,9 +129,9 @@ const Link = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  img{
-    margin:-38px auto 12px; 
-    border-radius:50%;
+  img {
+    margin: -38px auto 12px;
+    border-radius: 50%;
   }
 `;
 
@@ -186,6 +192,7 @@ const Item = styled.a`
     align-items: center;
     color: rgba(0, 0, 0, 1);
     svg {
+      cursor: pointer;
       color: rgba(0, 0, 0, 0.6);
     }
   }
@@ -206,7 +213,7 @@ const CommunityCard = styled(ArtCard)`
     font-size: 12px;
 
     &:hover {
-      color: #0a66c2;
+
     }
 
     span {
@@ -215,23 +222,41 @@ const CommunityCard = styled(ArtCard)`
       justify-content: space-between;
     }
 
-    &:last-child {
-      color: rgba(0, 0, 0, 0.6);
-      text-decoration: none;
-
-      border-top: 3px solid #001838;
-      padding: 12px;
+    .dismore{
+      border-top: none;
+      align-items: left;
       &:hover {
-        background-color: rgba(0, 0, 0, 0.08);
-      }
+      color: #0a66c2;
+      cursor: pointer;
+  }
     }
   }
 `;
 
-const mapStateToProps =(state)=>{
-  return{
-    user:state.userState.user,
+const ProjectList = styled.div`
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ProjectItem = styled.div`
+  display: block;
+  color: black;
+  font-size: 12px;
+  padding: 4px 0;
+  &:hover {
+  }
+`;
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.userState.user,
+    projects: state.projectState.projects,
   };
 };
 
-export default connect(mapStateToProps)(Leftside);
+const mapDispatchToProps = (dispatch) => ({
+  getProjects: () => dispatch(getProjectsAPI()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Leftside);

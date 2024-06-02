@@ -1,24 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
   const [eventName, setEventName] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const [eventDate, setEventDate] = useState("");
+  const [eventTime, setEventTime] = useState("");
   const [eventLocation, setEventLocation] = useState("");
   const [eventPoster, setEventPoster] = useState(null);
   const [eventBrochure, setEventBrochure] = useState(null);
   const [registrationLink, setRegistrationLink] = useState("");
+  const [clubName, setClubName] = useState("");
+  const [duration, setDuration] = useState("");
 
   useEffect(() => {
     if (existingEvent) {
       setEventName(existingEvent.name);
       setEventDescription(existingEvent.description);
       setEventDate(existingEvent.date);
+      setEventTime(existingEvent.time);
       setEventLocation(existingEvent.location);
       setEventPoster(existingEvent.poster);
       setEventBrochure(existingEvent.brochure);
       setRegistrationLink(existingEvent.registrationLink);
+      setClubName(existingEvent.clubName);
+      setDuration(existingEvent.duration);
     } else {
       resetForm();
     }
@@ -28,10 +34,13 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
     setEventName("");
     setEventDescription("");
     setEventDate("");
+    setEventTime("");
     setEventLocation("");
     setEventPoster(null);
     setEventBrochure(null);
     setRegistrationLink("");
+    setClubName("");
+    setDuration("");
   };
 
   const handleFileChange = (e, setFile) => {
@@ -43,10 +52,13 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
       name: eventName,
       description: eventDescription,
       date: eventDate,
+      time: eventTime,
       location: eventLocation,
       poster: eventPoster,
       brochure: eventBrochure,
       registrationLink: registrationLink,
+      clubName: clubName,
+      duration: duration,
     };
     onSubmit(eventData);
     resetForm();
@@ -80,6 +92,11 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
             onChange={(e) => setEventDate(e.target.value)}
           />
           <Input
+            type="time"
+            value={eventTime}
+            onChange={(e) => setEventTime(e.target.value)}
+          />
+          <Input
             type="text"
             placeholder="Location"
             value={eventLocation}
@@ -98,6 +115,18 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
             placeholder="Registration Link"
             value={registrationLink}
             onChange={(e) => setRegistrationLink(e.target.value)}
+          />
+          <Input
+            type="text"
+            placeholder="Club Name"
+            value={clubName}
+            onChange={(e) => setClubName(e.target.value)}
+          />
+          <Input
+            type="text"
+            placeholder="Duration"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
           />
           <SubmitButton type="button" onClick={handleSubmit}>
             {existingEvent ? "Update Event" : "Create Event"}
@@ -118,6 +147,7 @@ const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 `;
 
 const ModalContent = styled.div`
@@ -146,7 +176,7 @@ const Form = styled.form`
 
 const Input = styled.input`
   display: block;
-  width: 100%;
+  width: 95%;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ddd;
@@ -160,7 +190,7 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  align-self: flex-end;
+  align-self: center;
 `;
 
-export default EventModal
+export default EventModal;

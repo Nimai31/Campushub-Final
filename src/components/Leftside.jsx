@@ -75,9 +75,9 @@ const Leftside = (props) => {
               {project.name}
             </ProjectItem>
           ))}
-          <a onClick={handleDiscoverMoreClick}>
-          <span className="dismore">Discover more</span>
-        </a>
+          <ProjectItem className ="discover" onClick={handleDiscoverMoreClick}>
+          Discover more
+          </ProjectItem>
         </ProjectList>
           
         )}
@@ -212,14 +212,11 @@ const CommunityCard = styled(ArtCard)`
     padding: 4px 12px 4px 12px;
     font-size: 12px;
 
-    &:hover {
-
-    }
-
     span {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding-bottom: 3px;
     }
 
     .dismore{
@@ -237,6 +234,12 @@ const ProjectList = styled.div`
   padding: 0 12px;
   display: flex;
   flex-direction: column;
+  .discover{
+    font-weight: bolder;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    cursor: pointer;
+  }
 `;
 
 const ProjectItem = styled.div`
@@ -244,9 +247,9 @@ const ProjectItem = styled.div`
   color: black;
   font-size: 12px;
   padding: 4px 0;
-  &:hover {
-  }
 `;
+
+
 
 const mapStateToProps = (state) => {
   return {

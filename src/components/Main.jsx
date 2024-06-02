@@ -17,6 +17,12 @@ const Main = (props) => {
     props.getArticles();
   }, []);
 
+  useEffect(() => {
+    if (props.querySearch) {
+      props.searchUsers(props.querySearch);
+    }
+  }, [props.querySearch]);
+
   const handleClick = (e) => {
     e.preventDefault();
     if (e.target !== e.currentTarget) {
@@ -59,6 +65,21 @@ const Main = (props) => {
   const handleDelete = (articleId) => {
     props.deleteArticle(articleId);
   };
+
+  const handleShare = (article) => {
+    if (navigator.share) {
+      navigator.share({
+        title: article.title,
+        text: article.description,
+        url: window.location.href, 
+      })
+      .then(() => console.log('Article shared successfully'))
+      .catch((error) => console.error('Error sharing article:', error));
+    } else {
+      alert('Web Share API is not supported in your browser.');
+    }
+  };
+  
 
   return (
     <>
@@ -169,7 +190,7 @@ const Main = (props) => {
                       <span>Comment</span>
                     </button>
 
-                    <button>
+                    <button onClick={() => handleShare(article)}>
                       <img src="/images/share-icon.svg" alt="" />
                       <span>Share</span>
                     </button>
@@ -540,6 +561,7 @@ const mapStateToProps = (state) => {
     user: state.userState.user,
     articles: state.articleState.articles,
     searchQuery: state.searchState.searchQuery,
+    searchResults: state.searchState.searchResults,
   };
 };
 
@@ -549,7 +571,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(updateArticleLikes(articleId, userEmail)),
   addComment: (articleId, comment, userEmail, userImage) =>
     dispatch(addCommentAPI(articleId, comment, userEmail, userImage)),
-  deleteArticle: (articleId) => dispatch(deleteArticleAPI(articleId)), // Add the delete action
+  deleteArticle: (articleId) => dispatch(deleteArticleAPI(articleId)), 
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

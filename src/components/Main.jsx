@@ -10,7 +10,6 @@ const Main = (props) => {
   const [showModal, setShowModal] = useState("close");
   const [commentText, setCommentText] = useState("");
   const [expandedArticleId, setExpandedArticleId] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -135,7 +134,7 @@ const Main = (props) => {
                     </a>
                     <button  onClick={() => handleDelete(article.id)}
                           disabled={props.user.email !== article.actor.description}>
-                      <img src="/images/ellipsis.svg" alt="" />
+                      <img src="/images/delete.svg" alt="" />
                     </button>
                   </SharedActor>
                   <Description>{article.description}</Description>
@@ -316,6 +315,7 @@ const SharedActor = styled.div`
     text-decoration: none;
 
     img {
+      cursor: pointer;
       width: 48px;
       height: 48px;
     }
@@ -327,6 +327,7 @@ const SharedActor = styled.div`
       margin-left: 8px;
       overflow: hidden;
       span {
+        cursor: pointer;
         text-align: left;
         &:first-child {
           font-size: 14px;
@@ -347,40 +348,14 @@ const SharedActor = styled.div`
     background: transparent;
     border: none;
     outline: none;
+    cursor: pointer;
     img {
       width: 20px;
       height: 20px;
+      margin-top: 10px;
     }
   }
 `;
-
-const DropdownMenu = styled.div`
-  position: absolute;
-  right: 10px;
-  top: 30px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  z-index: 1;
-`;
-
-const DropdownItem = styled.button`
-  display: block;
-  padding: 10px 20px;
-  background: white;
-  border: 3px solid  #001838;
-  text-align: left;
-  width: 100%;
-  &:hover {
-    background: #f5f5f5;
-  }
-  &:disabled {
-    color: #ccc;
-    cursor: not-allowed;
-  }
-`;
-
 
 const Description = styled.div`
   padding: 0 16px;

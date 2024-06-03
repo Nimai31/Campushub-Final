@@ -238,7 +238,7 @@ const Sharebox = styled(CommonCard)`
   flex-direction: column;
   color: #fff;
   margin: 0 0 8px;
-
+  
   div {
     button {
       outline: none;

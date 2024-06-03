@@ -318,33 +318,47 @@ export const fetchUserDetails = (email) => {
   };
 };
 
-export const updateUserDetailsAPI = (
-  email,
-  profilePicture,
-  username,
-  details
-) => {
+export const updateUserDetailsAPI = (email, profilePicture, username, details) => {
   return (dispatch) => {
-    const userDetails = { ...details, profilePicture, username };
+    const userRef = db.collection("users").doc(email);
 
-    db.collection("users")
-      .doc(email)
-      .set(userDetails, { merge: true })
-      .then(() => {
-        dispatch(setUserDetails(userDetails));
-      })
-      .catch((error) => {
-        console.error("Error updating user details: ", error);
-      });
+    
+    userRef.get().then((doc) => {
+      if (doc.exists) {
+        const existingDetails = doc.data();
+
+        
+        const userDetails = { 
+          ...details, 
+          profilePicture, 
+          username,
+          skills: existingDetails.skills || []  
+        };
+
+        
+        userRef.set(userDetails, { merge: true })
+          .then(() => {
+            dispatch(setUserDetails(userDetails));
+          })
+          .catch((error) => {
+            console.error("Error updating user details: ", error);
+          });
+      } else {
+        console.error("No such document!");
+      }
+    }).catch((error) => {
+      console.error("Error getting document: ", error);
+    });
   };
 };
+
 
 export const fetchUserDetailsByEmail = (email) => {
   return async (dispatch) => {
     try {
       let userDetails = {};
 
-      // Fetch user details from the "users" collection
+     
       await db
         .collection("users")
         .doc(email)
@@ -375,7 +389,7 @@ export const addCommentAPI = (articleId, comment, userEmail, userImage) => {
       const userDoc = await userRef.get();
       if (userDoc.exists) {
         const userData = userDoc.data();
-        const username = userData.username || userEmail; // Fallback to email if username doesn't exist
+        const username = userData.username || userEmail; 
 
         const articleRef = db.collection("articles").doc(articleId);
 

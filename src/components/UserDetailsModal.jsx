@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
-import { updateUserDetailsAPI } from "../actions";
-import { fetchUserDetails } from "../actions";
+import { updateUserDetailsAPI, fetchUserDetails } from "../actions";
 
 const UserDetailsModal = (props) => {
   const [headline, setHeadline] = useState("");
@@ -11,10 +10,9 @@ const UserDetailsModal = (props) => {
   const [links, setLinks] = useState("");
 
   const handleSubmit = (e) => {
-    
     e.preventDefault();
     const username = props.user.displayName;
-    const userEmail = props.user.email; 
+    const userEmail = props.user.email;
     const userProfileImage = props.user.photoURL;
     const userDetails = { headline, branch, semester, links };
 
@@ -38,17 +36,10 @@ const UserDetailsModal = (props) => {
   }, [props.userDetails]);
 
   const reset = (e) => {
-    if (!props.user.email) {
-      setHeadline("");
-      setBranch("");
-      setSemester("");
-      setLinks("");
-    } else {
-      setHeadline(props.userDetails.headline);
-      setBranch(props.userDetails.branch);
-      setSemester(props.userDetails.semester);
-      setLinks(props.userDetails.links);
-    }
+    setHeadline(props.userDetails.headline || "");
+    setBranch(props.userDetails.branch || "");
+    setSemester(props.userDetails.semester || "");
+    setLinks(props.userDetails.links || "");
     props.handleClick(e);
   };
 
@@ -60,47 +51,47 @@ const UserDetailsModal = (props) => {
             <Header>
               <h2>Edit Profile</h2>
               <button onClick={(event) => reset(event)}>
-                <img src="/images/close-icon.svg" alt="" />
+                <img src="/images/close-icon.svg" alt="Close" />
               </button>
             </Header>
             <FormContent>
               <form onSubmit={handleSubmit}>
-                <label>
+                <Label>
                   Headline:
-                  <input
+                  <Input
                     type="text"
                     value={headline}
-                    placeholder=""
+                    placeholder="Enter your headline"
                     onChange={(e) => setHeadline(e.target.value)}
                   />
-                </label>
-                <label>
+                </Label>
+                <Label>
                   Branch:
-                  <input
+                  <Input
                     type="text"
                     placeholder="Enter your branch"
                     value={branch}
                     onChange={(e) => setBranch(e.target.value)}
                   />
-                </label>
-                <label>
+                </Label>
+                <Label>
                   Semester:
-                  <input
+                  <Input
                     type="text"
                     value={semester}
-                    placeholder="Enter Semester"
+                    placeholder="Enter your semester"
                     onChange={(e) => setSemester(e.target.value)}
                   />
-                </label>
-                <label>
+                </Label>
+                <Label>
                   Links:
-                  <input
+                  <Input
                     type="text"
-                    placeholder="Enter Coding Profile"
+                    placeholder="Enter coding profile link"
                     value={links}
                     onChange={(e) => setLinks(e.target.value)}
                   />
-                </label>
+                </Label>
                 <SubmitButton type="submit">Submit</SubmitButton>
               </form>
             </FormContent>
@@ -121,87 +112,108 @@ const Container = styled.div`
   color: black;
   background-color: rgba(0, 0, 0, 0.8);
   animation: fadeIn 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Content = styled.div`
   width: 100%;
-  max-width: 552px;
-  background-color: #98c5e9;
-  max-height: 90%;
-  border-radius: 5px;
+  max-width: 500px;
+  background-color: #fff;
+  border-radius: 10px;
   position: relative;
   display: flex;
   flex-direction: column;
-  top: 32px;
-  margin: 0 auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-in-out;
+  border: 5px solid #001838;
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
 `;
 
 const Header = styled.div`
-  display: block;
-  padding: 16px 24px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0, 0.15);
-  font-size: 16px;
-  line-height: 1.5;
-  color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20px;
+  background-color: transparent;
+  color: rgba(0,0,0,0.8);
+  border-radius: 10px;
 
-  img {
-    max-height: 28px;
-    pointer-events: none;
+  h2 {
+    margin: 0;
+    font-size: 20px;
   }
 
   button {
-    height: 40px;
-    width: 40px;
-    min-width: auto;
-    color: rgba(0, 0, 0, 0.15);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
 
-    svg {
-      pointer-events: none;
-    }
+  img {
+    width: 24px;
+    height: 24px;
   }
 `;
 
 const FormContent = styled.div`
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  overflow-y: auto;
-  vertical-align: baseline;
-  background: transparent;
-  padding: 8px 12px;
-
+  padding: 20px 30px;
+  padding-right: 40px;
   form {
     display: flex;
     flex-direction: column;
+  }
+`;
 
-    label {
-      margin-bottom: 12px;
-      font-size: 16px;
-      color: rgba(0, 0, 0, 0.6);
+const Label = styled.label`
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #333;
 
-      input {
-        width: 100%;
-        height: 35px;
-        font-size: 16px;
-        margin-top: 5px;
-      }
+  input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+
+    &:focus {
+      border-color: #0a66c2;
     }
   }
 `;
 
+const Input = styled.input``;
+
 const SubmitButton = styled.button`
-  border-radius: 20px;
-  padding: 10px 20px;
-  background: #0a66c2;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #98c5e9;
   color: white;
   border: none;
   cursor: pointer;
-
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.3s;
+  border: 3px solid #001838;
   &:hover {
-    background: #004182;
+    background: #001838;
+    transform: translateY(-2px);
   }
 `;
 

@@ -11,21 +11,36 @@ import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { Navigate } from "react-router-dom";
 import EventModal from "./EventModal";
+import db from "../firebase";
 
 const EventCollab = (props) => {
   const [showEventForm, setShowEventForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (props.user) {
       props.getEvents();
+      checkAuthorization();
     }
   }, [props.user]);
 
   const handleUserClick = (email) => {
     navigate(`/user/${email}`);
+  };
+
+  const checkAuthorization = async () => {
+    if (props.user) {
+      const doc = await db.collection("settings").doc("authorizedUsers").get();
+      if (doc.exists) {
+        const authorizedEmails = doc.data().emails;
+        if (authorizedEmails.includes(props.user.email)) {
+          setIsAuthorized(true);
+        }
+      }
+    }
   };
 
   const handleEventSubmit = (eventData) => {
@@ -79,9 +94,11 @@ const EventCollab = (props) => {
     return (
     <Container>
       <EventBox>
-        <CreateEventButton onClick={toggleEventForm}>
-          Create Event
-        </CreateEventButton>
+        {isAuthorized && (
+          <CreateEventButton onClick={toggleEventForm}>
+            Create Event
+          </CreateEventButton>
+        )}
         <EventModal
           show={showEventForm}
           onClose={resetForm}

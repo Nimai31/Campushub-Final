@@ -58,9 +58,6 @@ const Main = (props) => {
     setExpandedArticleId(expandedArticleId === articleId ? null : articleId);
   };
 
-  const handleDropdown = (articleId) => {
-    setDropdownOpen(dropdownOpen === articleId ? null : articleId);
-  };
 
   const handleDelete = (articleId) => {
     props.deleteArticle(articleId);
@@ -110,11 +107,6 @@ const Main = (props) => {
             </button>
 
             <button>
-              <img src="/images/post-event-icon.svg" alt="" />
-              <span>Event</span>
-            </button>
-
-            <button>
               <img src="/images/post-article-icon.svg" alt="" />
               <span>Article</span>
             </button>
@@ -141,21 +133,10 @@ const Main = (props) => {
                         </span>
                       </div>
                     </a>
-                    <button onClick={() => handleDropdown(article.id)}>
+                    <button  onClick={() => handleDelete(article.id)}
+                          disabled={props.user.email !== article.actor.description}>
                       <img src="/images/ellipsis.svg" alt="" />
                     </button>
-                    {dropdownOpen === article.id && (
-                      
-                      <DropdownMenu>
-                        <DropdownItem
-                          onClick={() => handleDelete(article.id)}
-                          disabled={props.user.email !== article.actor.description}
-                        >
-                          Delete
-                        </DropdownItem>
-                      </DropdownMenu>
-                      
-                    )}
                   </SharedActor>
                   <Description>{article.description}</Description>
                   <SharedImg>
@@ -171,12 +152,14 @@ const Main = (props) => {
                     <li>
                       <button>
                         <img src="/images/like-pic.svg" alt="" />
-                        <img src="/images/clap-pic.svg" alt="" />
                         <span>{article.likes.count}</span>
                       </button>
                     </li>
                     <li>
+                      <button>
+                      <img src = "/images/comment-image.svg"/>
                       <a>{article.comments.length}</a>
+                      </button>
                     </li>
                   </SocialCounts>
                   <SocialActions>
@@ -193,11 +176,6 @@ const Main = (props) => {
                     <button onClick={() => handleShare(article)}>
                       <img src="/images/share-icon.svg" alt="" />
                       <span>Share</span>
-                    </button>
-
-                    <button>
-                      <img src="/images/send-icon.svg" alt="" />
-                      <span>Send</span>
                     </button>
                   </SocialActions>
                   {expandedArticleId === article.id && (
@@ -468,6 +446,7 @@ const SocialActions = styled.div`
     color: #001838;
     background-color: #98c5e9;
     border: none;
+    cursor: pointer;
 
     img {
       height: 30px;

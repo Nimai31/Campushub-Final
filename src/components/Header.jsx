@@ -1,11 +1,12 @@
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { signOutAPI, setSearchQuery } from "../actions";
-import { useNavigate } from "react-router-dom";
-import {useState} from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
 
 const Header = (props) => {
   const navigate = useNavigate();
+  const location = useLocation(); // Get the current location
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearchChange = (e) => {
@@ -24,12 +25,12 @@ const Header = (props) => {
   };
 
   const handleProjectClick = () => {
-    navigate("/procollab")
-  }
+    navigate("/procollab");
+  };
 
   const handleEventClick = () => {
-    navigate("/events")
-  }
+    navigate("/events");
+  };
 
   return (
     <Container>
@@ -41,7 +42,7 @@ const Header = (props) => {
         </Logo>
         <Search>
           <div>
-          <input
+            <input
               type="text"
               placeholder="Search "
               value={searchTerm}
@@ -54,21 +55,30 @@ const Header = (props) => {
         </Search>
         <Nav>
           <NavListWrap>
-            <NavList onClick={handleHomeClick} className="active">
+            <NavList
+              onClick={handleHomeClick}
+              className={location.pathname === "/home" ? "active" : ""}
+            >
               <a>
-                <img src="/images/nav-home.svg" class="home" alt="" />
+                <img src="/images/nav-home.svg" className="home" alt="" />
                 <span>Home</span>
               </a>
             </NavList>
 
-            <NavList onClick={handleEventClick}>
+            <NavList
+              onClick={handleEventClick}
+              className={location.pathname === "/events" ? "active" : ""}
+            >
               <a>
-                <img src="/images/nav-events.svg" class="events" alt="" />
+                <img src="/images/nav-events.svg" className="events" alt="" />
                 <span>Event Hub</span>
               </a>
             </NavList>
 
-            <NavList  onClick={handleProjectClick}>
+            <NavList
+              onClick={handleProjectClick}
+              className={location.pathname === "/procollab" ? "active" : ""}
+            >
               <a>
                 <img
                   src="/images/nav-project-colab.svg"
@@ -76,13 +86,6 @@ const Header = (props) => {
                   alt=""
                 />
                 <span>Project Hub</span>
-              </a>
-            </NavList>
-
-            <NavList>
-              <a>
-                <img src="/images/nav-messaging.svg" class="messaging" alt="" />
-                <span>Messaging</span>
               </a>
             </NavList>
 
@@ -97,33 +100,26 @@ const Header = (props) => {
               </a>
             </NavList>
 
-            <User>
+            <NavList
+              onClick={handleProfileClick}
+              className={location.pathname === "/profile" ? "active" : ""}
+            >
               <a>
                 {props.user && props.user.photoURL ? (
-                  <img src={props.user.photoURL} alt="" />
+                  <img className="prof" src={props.user.photoURL} alt="" />
                 ) : (
                   <img src="/images/user.svg" alt="" />
                 )}
-                <span>Me</span>
-                <img src="/images/nav-dropdown.svg" alt="" />
+                <span>View Profile</span>
               </a>
-              <Profile onClick={handleProfileClick}>
-                <a>View Profile</a>
-              </Profile>
-              <SignOut onClick={() => props.SignOut()}>
-                <a>Sign Out</a>
-              </SignOut>
-            </User>
+            </NavList>
 
-            <Work>
+            <NavList onClick={() => props.SignOut()}>
               <a>
-                <img src="/images/nav-menu.svg" alt="" />
-                <span>
-                  More
-                  <img src="/images/nav-dropdown.svg" alt="" />
-                </span>
+                <img src="/images/sign-out.svg" alt="" />
+                <span>Sign Out</span>
               </a>
-            </Work>
+            </NavList>
           </NavListWrap>
         </Nav>
       </Content>
@@ -139,6 +135,7 @@ const Container = styled.div`
   position: fixed;
   top: 0;
   width: 100vw;
+  height: 80px;
   z-index: 100;
 `;
 
@@ -151,6 +148,7 @@ const Content = styled.div`
 `;
 
 const Logo = styled.span`
+  cursor: pointer;
   margin-right: 8px;
   font-size: 0px;
   & > a {
@@ -232,8 +230,10 @@ const NavListWrap = styled.ul`
 `;
 
 const NavList = styled.li`
+  cursor: pointer;
   display: flex;
   align-items: center;
+  margin-right: 2px;
   a {
     align-items: center;
     background: transparent;
@@ -252,6 +252,9 @@ const NavList = styled.li`
       max-width: 35px;
       padding-top: 5px;
       padding-bottom: 5px;
+    }
+    .prof {
+      border-radius: 50%;
     }
 
     .home {
@@ -289,67 +292,6 @@ const NavList = styled.li`
       }
     }
   }
-`;
-
-const SignOut = styled.div`
-  position: absolute;
-  top: 85px;
-  background-color: white;
-
-  width: 100px;
-  height: 40px;
-  font-size: 16px;
-  transition-duration: 167ms;
-  text-align: center;
-  display: none;
-`;
-
-const Profile = styled.div`
-  position: absolute;
-  top: 45px; /* Adjusted to be above SignOut */
-  background-color: white;
-  border-top: 4px black;
-  width: 100px;
-  height: 40px;
-  font-size: 16px;
-  transition-duration: 167ms;
-  text-align: center;
-  display: none;
-`;
-
-const User = styled(NavList)`
-  a > svg {
-    width: 24px;
-    border-radius: 50%;
-  }
-
-  a > img {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-  }
-
-  span {
-    display: flex;
-    align-items: center;
-  }
-
-  &:hover {
-    ${SignOut} {
-      align-items: center;
-      display: flex;
-      justify-content: center;
-    }
-    ${Profile} {
-      align-items: center;
-      display: flex;
-      justify-content: center;
-    }
-  }
-`;
-
-const Work = styled(NavList)`
-  border-left: 1px solid rgba(0, 0, 0, 0.08);
 `;
 
 const mapStateToProps = (state) => {

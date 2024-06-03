@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { connect } from "react-redux";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProjectsAPI } from "../actions";
+import { getProjectsAPI,fetchUserDetails } from "../actions";
 
 const Leftside = (props) => {
   const [showProjects, setShowProjects] = useState(false);
@@ -13,6 +13,12 @@ const Leftside = (props) => {
       props.getProjects();
     }
   }, []);
+
+  useEffect(() => {
+    if (props.user) {
+      props.fetchUserDetails(props.user.email);
+    }
+  }, [props.user]);
 
   const handleExploreProjects = () => {
     setShowProjects(!showProjects);
@@ -37,27 +43,19 @@ const Leftside = (props) => {
                 )}
               </a>
               Welcome, {props.user ? props.user.displayName : "there"}
+              <p className="email">{props.user? props.user.email: "email"}</p>
             </Link>
-          </a>
-          <a>
-            <AddPhotoText>Add a photo</AddPhotoText>
           </a>
         </UserInfo>
         <Widget>
           <a>
             <div>
-              <span>Followers</span>
-              <span>Grow your network</span>
+              <img src = "/images/info.svg" alt ="" />
+              <span className="headline">{props.userDetails ? props.userDetails.headline: "headline"}</span>
+              <span className="branch">{props.userDetails ? props.userDetails.branch: "branch"} - sem {props.userDetails ? props.userDetails.semester: "semester"}</span>
             </div>
-            <img src="/images/widget-icon.svg" alt="" />
           </a>
         </Widget>
-        <Item>
-          <span>
-            <img src="/images/item-icon.svg" alt="" />
-            My Items
-          </span>
-        </Item>
       </ArtCard>
 
       <CommunityCard>
@@ -104,10 +102,37 @@ const ArtCard = styled.div`
 `;
 
 const UserInfo = styled.div`
-  border-bottom: 3px solid #001838;
   padding: 12px 12px 16px;
   word-wrap: break-word;
   word-break: break-word;
+  border-bottom: 3px solid #001838;
+`;
+
+const Widget = styled.div`
+  padding-top: 12px;
+  padding-bottom: 12px;
+  div{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    .headline{
+      font-size: 16px;
+      font-weight: bolder;
+      padding-bottom: 5px;
+    }
+
+    .branch{
+      font-size: 14px;
+      font-weight: bolder;
+      color: rgba(0, 0, 0, 0.8);
+    }
+
+    img{
+      height: 45px;
+      margin-bottom: 10px;
+    }
+  }
 `;
 
 const CardBackground = styled.div`
@@ -133,84 +158,23 @@ const Link = styled.div`
     margin: -38px auto 12px;
     border-radius: 50%;
   }
-`;
-
-const AddPhotoText = styled.div`
-  color: #fff;
-  margin-top: 4px;
-  font-size: 12px;
-  line-height: 1.33;
-  font-weight: 400;
-`;
-
-const Widget = styled.div`
-  border-bottom: 3px solid #001838;
-  padding-top: 12px;
-  padding-bottom: 12px;
-
-  & > a {
-    text-decoration: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 12px;
-
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.08);
-    }
-
-    div {
-      display: flex;
-      flex-direction: column;
-      text-align: left;
-      span {
-        font-size: 12px;
-        line-height: 1.333;
-        &:first-child {
-          color: rgba(0, 0, 0, 0.6);
-        }
-        &:nth-child(2) {
-          color: rgba(0, 0, 0, 1);
-        }
-      }
-    }
-  }
-
-  svg {
-    color: rgba(0, 0, 0, 1);
+  p{
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.7);
   }
 `;
 
-const Item = styled.a`
-  border-color: rgba(0, 0, 0, 0.8);
-  text-align: left;
-  padding: 12px;
-  font-size: 12px;
-  display: block;
-  span {
-    display: flex;
-    align-items: center;
-    color: rgba(0, 0, 0, 1);
-    svg {
-      cursor: pointer;
-      color: rgba(0, 0, 0, 0.6);
-    }
-  }
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.08);
-  }
-`;
 
 const CommunityCard = styled(ArtCard)`
   padding: 8px 0 0;
   text-align: left;
   display: flex;
   flex-direction: column;
+  font-weight: bolder;
   a {
     color: black;
     padding: 4px 12px 4px 12px;
-    font-size: 12px;
+    font-size: 16px;
 
     span {
       display: flex;
@@ -234,17 +198,18 @@ const ProjectList = styled.div`
   padding: 0 12px;
   display: flex;
   flex-direction: column;
+  color: rgba(0,0,0,0.7);
   .discover{
-    font-weight: bolder;
     padding-top: 2px;
     padding-bottom: 2px;
     cursor: pointer;
+    color: black;
+    font-size: 14px;
   }
 `;
 
 const ProjectItem = styled.div`
   display: block;
-  color: black;
   font-size: 12px;
   padding: 4px 0;
 `;
@@ -255,11 +220,13 @@ const mapStateToProps = (state) => {
   return {
     user: state.userState.user,
     projects: state.projectState.projects,
+    userDetails: state.userState.userDetails,
   };
 };
 
 const mapDispatchToProps = (dispatch) => ({
   getProjects: () => dispatch(getProjectsAPI()),
+  fetchUserDetails: (email) => dispatch(fetchUserDetails(email)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Leftside);

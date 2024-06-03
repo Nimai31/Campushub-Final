@@ -122,12 +122,7 @@ const PostModal = (props) => {
                   <img src="/images/post-video-icon.svg" alt="" />
                 </AssetButton>
               </AttachAssets>
-              <ShareComment>
-                <AssetButton>
-                  <img src="/images/comment.svg" alt="" />
-                  Anyone
-                </AssetButton>
-              </ShareComment>
+  
               <PostButton
                 disabled={!editorText ? true : false}
                 onClick={(event) => postArticle(event)}
@@ -239,7 +234,7 @@ const AssetButton = styled.button`
   height: 40px;
   min-width: auto;
   color: rgba(0, 0, 0, 0.5);
-
+  margin-right: 5px;
   img {
     height: 30px;
   }
@@ -251,17 +246,6 @@ const AttachAssets = styled.div`
   padding-right: 8px;
   ${AssetButton} {
     width: 40px;
-  }
-`;
-
-const ShareComment = styled.div`
-  padding-left: 8px;
-  margin-right: auto;
-  border-left: 1px solid rgba(0, 0, 0, 0.15);
-  ${AssetButton} {
-    svg {
-      margin-right: 5px;
-    }
   }
 `;
 

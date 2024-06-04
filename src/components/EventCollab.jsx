@@ -149,23 +149,24 @@ const EventCollab = (props) => {
                   <LeftSide>
                     <UserInfo onClick={() => handleUserClick(event.email)}>
                       <ProfilePic src={event.profilePic} alt="Profile" />
-                      <UserName>{event.userName}</UserName>
+                      <UserName>{event.userName}, {event.clubName}</UserName>
                     </UserInfo>
                     <EventHeader>
-                      <div>
-                        <EventName>{event.name}</EventName>
-                        <EventTime>
+
+                      <EventTime>
                           {formatDistanceToNow(new Date(event.timestamp))} ago
                         </EventTime>
-                      </div>
-                      <EventDateDetails>
-                        {event.date} | {event.time}
-                      </EventDateDetails>
                     </EventHeader>
-                    <ClubName>Club Name: {event.clubName}</ClubName>
+                    <EventName>{event.name}</EventName>
                     <EventDescription>{event.description}</EventDescription>
-                    <EventLocation>Location: {event.location}</EventLocation>
-                    <EventDuration>Duration: {event.duration}</EventDuration>
+                    <EventLocation><b>Location:</b> {event.location}</EventLocation>
+                    <EventDateDetails>
+                        <b>Date:</b> {event.date}  
+                    </EventDateDetails>
+                    <EventTimeDetails>
+                       <b>Time:</b> {event.time}
+                    </EventTimeDetails>
+                    <EventDuration><b>Duration:</b> {event.duration}</EventDuration>
                     {event.brochure && (
                       <EventBrochure
                         href={event.brochure}
@@ -221,6 +222,8 @@ const EventCollab = (props) => {
 const Container = styled.div`
   grid-area: main;
   padding-top: 100px;
+  background-color: rgba(0, 0, 0, 0.07);
+  min-height: 100vh;
 `;
 
 const EventBox = styled.div`
@@ -229,20 +232,26 @@ const EventBox = styled.div`
 `;
 
 const CreateEventButton = styled.button`
-  padding: 10px;
+  padding: 10px 20px;
   background-color: #0073b1;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+  &:hover {
+    background-color: #005f8b;
+  }
 `;
 
 const NoEventsMessage = styled.p`
   text-align: center;
+  font-size: 18px;
+  color: #555;
 `;
 
 const Content = styled.div`
-  text-align: center;
+  text-align: left;
   .loading {
     height: 30px;
     width: 30px;
@@ -254,15 +263,17 @@ const Event = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 10px auto;
+  margin: 20px auto;
   padding: 30px;
   background-color: #98c5e9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  width: 900px;
-  height: 700px;
   box-sizing: border-box;
-  border: 28px solid hsla(220, 75%, 30%, 0.84);
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border: 20px solid hsla(220, 75%, 30%, 0.84);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 1000px;
 `;
 
 const EventDetails = styled.div`
@@ -275,9 +286,10 @@ const EventDetails = styled.div`
 
 const EventHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   width: 100%;
   margin-bottom: 10px;
+  margin-top: -33px;
 `;
 
 const ClubName = styled.h3`
@@ -288,7 +300,9 @@ const ClubName = styled.h3`
 
 const EventName = styled.h3`
   margin: 0;
-  color: #333;
+  color: black;
+  margin-top: 30px;
+  margin-bottom: 10px;
 `;
 
 const EventTime = styled.span`
@@ -297,7 +311,12 @@ const EventTime = styled.span`
 `;
 
 const EventDateDetails = styled.span`
-  color: #777;
+  color: black;
+  padding-bottom: 5px;
+`;
+
+const EventTimeDetails = styled.span`
+  color: black;
 `;
 
 const LeftSide = styled.div`
@@ -326,6 +345,8 @@ const UserInfo = styled.span`
   display: flex;
   align-items: center;
   cursor: pointer;
+  margin-top: -10px;
+  margin-left: -10px;
 `;
 
 const UserName = styled.p`
@@ -341,12 +362,13 @@ const ProfilePic = styled.img`
 
 const EventDescription = styled.p`
   margin: 5px 0;
-  color: #555;
+  color: black;
+  text-align: justify;
 `;
 
 const EventLocation = styled.p`
   margin: 5px 0;
-  color: #777;
+  color: black;
 `;
 
 const EventPoster = styled.img`
@@ -375,7 +397,8 @@ const EventRegistrationLink = styled.a`
 const Buttons = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  margin-top: 55px;
+  
 `;
 
 const EditButton = styled.button`
@@ -386,6 +409,9 @@ const EditButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  &:hover {
+    background-color: #005f8b;
+  }
 `;
 
 const DeleteButton = styled.button`
@@ -395,6 +421,9 @@ const DeleteButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  &:hover {
+    background-color: #b52b2b;
+  }
 `;
 
 const ZoomButton = styled.button`
@@ -407,6 +436,9 @@ const ZoomButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  &:hover {
+    background-color: #005f8b;
+  }
 `;
 
 const ZoomModal = styled.div`
@@ -429,7 +461,7 @@ const ZoomedImage = styled.img`
 
 const EventDuration = styled.p`
   margin: 5px 0;
-  color: #777;
+  color: black;
 `;
 
 const mapStateToProps = (state) => {
@@ -450,4 +482,3 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EventCollab);
-

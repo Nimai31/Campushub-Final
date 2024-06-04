@@ -127,7 +127,6 @@ const Content = styled.div`
   flex-direction: column;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   animation: slideIn 0.3s ease-in-out;
-  border: 5px solid #001838;
 
   @keyframes slideIn {
     from {

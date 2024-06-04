@@ -128,7 +128,7 @@ const ProjectCollab = (props) => {
               <RoleInput key={index}>
                 <input
                   type="text"
-                  placeholder="Name"
+                  placeholder="Name: N/A"
                   value={role.name}
                   onChange={(e) =>
                     handleRoleChange(index, "name", e.target.value)
@@ -166,13 +166,16 @@ const ProjectCollab = (props) => {
                     <img src={project.profilePic} />
                     <h1>{project.userName}</h1>
                   </UserInfo>
-                  <h3>Project Name: {project.name}</h3>
+                  <h3>{project.name}</h3>
                   <Description>{project.description || '\u00A0'.repeat(4)}</Description>
+                  
                   <RoleList>
+                    <h3>Roles-</h3>
+                    <br/>
                     {project.roles.map((role, index) => (
-                      <li key={index}>
-                        {role.name}: {role.role}
-                      </li>
+                      <div><li key={index}>
+                        {role.name} - {role.role}
+                      </li></div>
                     ))}
                   </RoleList>
                   {project.creator === props.user.email && (
@@ -245,6 +248,7 @@ const RoleInput = styled.div`
     width: 40%;
   }
   button {
+    margin-left: 2px;
     padding: 5px 10px;
     background-color: red;
     color: white;
@@ -286,15 +290,20 @@ const ProjectDetails = styled.div`
   text-align: left;
   position: relative;
   height: 100%;
+  padding-left: 20px;
+  h3{
+    margin-top: 20px;
+  }
 `;
 
 const UserInfo = styled.div`
   display: flex;
   align-items: center;
+  margin-left: -15px;
   img {
     border-radius: 50%;
+    height: 50px;
     margin-right: 10px;
-    margin-bottom: 30px;
   }
   h1 {
     margin: 0;
@@ -307,14 +316,25 @@ const Description = styled.p`
   white-space: pre-wrap;
   line-height: 1.5;
   min-height: 4em;
+  text-align: justify;
 `;
 
 const RoleList = styled.ul`
   list-style: none;
   padding: 0;
   margin: 5px 0;
+  display: flex;
+  flex-direction: column;
+
   li {
     margin: 3px 0;
+    font-size: 17px;
+    background-color:#0073b1;
+    color: white;
+    width: max-content;
+    padding: 5px;
+    border-radius: 5px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   }
 `;
 

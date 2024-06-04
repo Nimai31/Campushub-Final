@@ -307,14 +307,9 @@ const EventHeader = styled.div`
   justify-content: flex-end;
   width: 100%;
   margin-bottom: 10px;
-  margin-top: -33px;
+  margin-top: -31px;
 `;
 
-const ClubName = styled.h3`
-  font-weight: bold;
-  margin: 10px 0;
-  color: #333;
-`;
 
 const EventName = styled.h3`
   margin: 0;
@@ -466,6 +461,7 @@ const InterestedButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  margin-right: 5px;
 `;
 
 const ZoomModal = styled.div`

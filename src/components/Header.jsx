@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const Header = (props) => {
   const navigate = useNavigate();
-  const location = useLocation(); // Get the current location
+  const location = useLocation(); 
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearchChange = (e) => {
@@ -31,6 +31,10 @@ const Header = (props) => {
   const handleEventClick = () => {
     navigate("/events");
   };
+
+  const handleNotificationClick = () => {
+    navigate("/notification");
+  }
 
   return (
     <Container>
@@ -89,7 +93,8 @@ const Header = (props) => {
               </a>
             </NavList>
 
-            <NavList>
+            <NavList onClick={handleNotificationClick}
+              className={location.pathname === "/notification" ? "active" : ""}>
               <a>
                 <img
                   src="/images/nav-notifications.svg"

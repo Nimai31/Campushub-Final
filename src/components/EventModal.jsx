@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { storage } from "../firebase"; // Import your Firebase configuration
 
 const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
   const [eventName, setEventName] = useState("");
@@ -47,21 +48,47 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
     setFile(e.target.files[0]);
   };
 
-  const handleSubmit = () => {
-    const eventData = {
-      name: eventName,
-      description: eventDescription,
-      date: eventDate,
-      time: eventTime,
-      location: eventLocation,
-      poster: eventPoster,
-      brochure: eventBrochure,
-      registrationLink: registrationLink,
-      clubName: clubName,
-      duration: duration,
-    };
-    onSubmit(eventData);
-    resetForm();
+  const handleSubmit = async () => {
+    console.log("handleSubmit triggered");
+    try {
+      let posterURL = "";
+      let brochureURL = "";
+
+      if (eventPoster) {
+        console.log("Uploading poster...");
+        const posterRef = storage.ref().child(`posters/${eventPoster.name}`);
+        await posterRef.put(eventPoster);
+        posterURL = await posterRef.getDownloadURL();
+        console.log("Poster uploaded, URL:", posterURL);
+      }
+
+      if (eventBrochure) {
+        console.log("Uploading brochure...");
+        const brochureRef = storage.ref().child(`brochures/${eventBrochure.name}`);
+        await brochureRef.put(eventBrochure);
+        brochureURL = await brochureRef.getDownloadURL();
+        console.log("Brochure uploaded, URL:", brochureURL);
+      }
+
+      const eventData = {
+        name: eventName,
+        description: eventDescription,
+        date: eventDate,
+        time: eventTime,
+        location: eventLocation,
+        poster: posterURL,
+        brochure: brochureURL,
+        registrationLink: registrationLink,
+        clubName: clubName,
+        duration: duration,
+      };
+
+      console.log("Event Data:", eventData);
+      onSubmit(eventData);
+      resetForm();
+    } catch (error) {
+      console.error("Error uploading files: ", error);
+    }
   };
 
   if (!show) {

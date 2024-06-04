@@ -163,8 +163,8 @@ const ProjectCollab = (props) => {
                 <Timestamp>{formatDistanceToNow(new Date(project.timestamp))} ago</Timestamp>
                 <ProjectDetails>
                   <UserInfo>
-                    <img src={project.profilePic} />
-                    <h1>{project.userName}</h1>
+                    <img onClick={()=>{handleUserClick(project.email)}} src={project.profilePic} />
+                    <h1 onClick={()=>{handleUserClick(project.email)}}>{project.userName}</h1>
                   </UserInfo>
                   <h3>{project.name}</h3>
                   <Description>{project.description || '\u00A0'.repeat(4)}</Description>
@@ -304,10 +304,12 @@ const UserInfo = styled.div`
     border-radius: 50%;
     height: 50px;
     margin-right: 10px;
+    cursor: pointer;
   }
   h1 {
     margin: 0;
     font-weight: bold;
+    cursor: pointer;
   }
 `;
 

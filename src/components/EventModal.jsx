@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { storage } from "../firebase"; // Import your Firebase configuration
+import { storage } from "../firebase"; 
 
 const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
   const [eventName, setEventName] = useState("");

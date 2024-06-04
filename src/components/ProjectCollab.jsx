@@ -10,7 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { Navigate } from "react-router-dom";
-import Modal from "./Modal"; // Adjust the path as necessary
+import Modal from "./Modal";
 
 const ProjectCollab = (props) => {
   const [showProjectForm, setShowProjectForm] = useState(false);
@@ -160,15 +160,14 @@ const ProjectCollab = (props) => {
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
             .map((project, key) => (
               <Project key={key}>
+                <Timestamp>{formatDistanceToNow(new Date(project.timestamp))} ago</Timestamp>
                 <ProjectDetails>
-                  <span onClick={() => handleUserClick(project.email)}>
-                    <p>{project.userName}</p>
+                  <UserInfo>
                     <img src={project.profilePic} />
-                  </span>
-
-                  <h3>{project.name}</h3>
-                  <p>{project.description}</p>
-                  <p>{formatDistanceToNow(new Date(project.timestamp))} ago</p>
+                    <h1>{project.userName}</h1>
+                  </UserInfo>
+                  <h3>Project Name: {project.name}</h3>
+                  <Description>{project.description || '\u00A0'.repeat(4)}</Description>
                   <RoleList>
                     {project.roles.map((role, index) => (
                       <li key={index}>
@@ -198,6 +197,8 @@ const ProjectCollab = (props) => {
 const Container = styled.div`
   grid-area: main;
   padding-top: 100px;
+  max-width: 700px;
+  margin: 0 auto;
 `;
 
 const ProjectBox = styled.div`
@@ -214,6 +215,7 @@ const ProjectBox = styled.div`
 `;
 
 const ProjectForm = styled.div`
+  z-index:10;
   display: flex;
   flex-direction: column;
   margin: 10px 0;
@@ -254,28 +256,57 @@ const RoleInput = styled.div`
 
 const Content = styled.div`
   text-align: center;
-  .loading{
+  .loading {
     height: 30px;
     width: 30px;
   }
 `;
 
 const Project = styled.div`
-  margin: 10px 0;
-  padding: 10px;
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
+  margin: 30px 0;
+  padding: 20px;
+  height: 480px;
+  background-color: #98c5e9;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border: 20px solid hsla(220, 75%, 30%, 0.84);
   border-radius: 5px;
+  position: relative;
+`;
+
+const Timestamp = styled.p`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  margin: 0;
 `;
 
 const ProjectDetails = styled.div`
   text-align: left;
-  h3 {
+  position: relative;
+  height: 100%;
+`;
+
+const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
+  img {
+    border-radius: 50%;
+    margin-right: 10px;
+    margin-bottom: 30px;
+  }
+  h1 {
     margin: 0;
+    font-weight: bold;
   }
-  p {
-    margin: 5px 0;
-  }
+`;
+
+const Description = styled.p`
+  margin: 20px 0;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  min-height: 4em;
 `;
 
 const RoleList = styled.ul`
@@ -290,6 +321,9 @@ const RoleList = styled.ul`
 const Buttons = styled.div`
   display: flex;
   justify-content: flex-end;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
   button {
     margin-left: 5px;
     padding: 5px 10px;

@@ -113,9 +113,9 @@ const EventItem = styled.div`
 const EventInfo = styled.div`
   display: flex;
   flex-direction: column;
-  margin-left: 10px; /* Adjusted for proper spacing */
+  margin-left: 10px; 
   margin-bottom: 10px;
-  align-items: flex-start; /* Ensure left alignment */
+  align-items: flex-start; 
 `;
 
 const EventName = styled.span`
@@ -133,7 +133,7 @@ const Avatar = styled.div`
   background-repeat: no-repeat;
   width: 40px;
   height: 40px;
-  margin-right: 10px; /* Adjusted for proper spacing */
+  margin-right: 10px; 
 `;
 
 const Recommendation = styled.a`
@@ -141,7 +141,7 @@ const Recommendation = styled.a`
   display: flex;
   align-items: center;
   font-size: 14px;
-
+  cursor: pointer;
   img {
     height: 20px;
     width: 30px;

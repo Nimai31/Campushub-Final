@@ -50,10 +50,17 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
 
   const handleSubmit = async () => {
     console.log("handleSubmit triggered");
+    
+    // Check for required fields
+    if (!eventName || !eventDescription || !eventDate || !eventTime || !eventLocation || !clubName || !duration) {
+      alert("Please fill out all required fields.");
+      return;
+    }
+  
     try {
       let posterURL = "";
       let brochureURL = "";
-
+  
       if (eventPoster) {
         console.log("Uploading poster...");
         const posterRef = storage.ref().child(`posters/${eventPoster.name}`);
@@ -61,7 +68,7 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
         posterURL = await posterRef.getDownloadURL();
         console.log("Poster uploaded, URL:", posterURL);
       }
-
+  
       if (eventBrochure) {
         console.log("Uploading brochure...");
         const brochureRef = storage.ref().child(`brochures/${eventBrochure.name}`);
@@ -69,7 +76,7 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
         brochureURL = await brochureRef.getDownloadURL();
         console.log("Brochure uploaded, URL:", brochureURL);
       }
-
+  
       const eventData = {
         name: eventName,
         description: eventDescription,
@@ -82,7 +89,7 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
         clubName: clubName,
         duration: duration,
       };
-
+  
       console.log("Event Data:", eventData);
       onSubmit(eventData);
       resetForm();
@@ -90,6 +97,7 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
       console.error("Error uploading files: ", error);
     }
   };
+  
 
   if (!show) {
     return null;
@@ -101,64 +109,69 @@ const EventModal = ({ show, onClose, onSubmit, existingEvent }) => {
         <CloseButton onClick={onClose}>&times;</CloseButton>
         <h2>{existingEvent ? "Edit Event" : "Create Event"}</h2>
         <Form>
-          <Input
-            type="text"
-            placeholder="Event Name"
-            value={eventName}
-            onChange={(e) => setEventName(e.target.value)}
-          />
-          <Input
-            type="text"
-            placeholder="Description"
-            value={eventDescription}
-            onChange={(e) => setEventDescription(e.target.value)}
-          />
-          <Input
-            type="date"
-            value={eventDate}
-            onChange={(e) => setEventDate(e.target.value)}
-          />
-          <Input
-            type="time"
-            value={eventTime}
-            onChange={(e) => setEventTime(e.target.value)}
-          />
-          <Input
-            type="text"
-            placeholder="Location"
-            value={eventLocation}
-            onChange={(e) => setEventLocation(e.target.value)}
-          />
-          <Input
-            type="file"
-            onChange={(e) => handleFileChange(e, setEventPoster)}
-          />
-          <Input
-            type="file"
-            onChange={(e) => handleFileChange(e, setEventBrochure)}
-          />
-          <Input
-            type="text"
-            placeholder="Registration Link"
-            value={registrationLink}
-            onChange={(e) => setRegistrationLink(e.target.value)}
-          />
-          <Input
-            type="text"
-            placeholder="Club Name"
-            value={clubName}
-            onChange={(e) => setClubName(e.target.value)}
-          />
-          <Input
-            type="text"
-            placeholder="Duration"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-          />
-          <SubmitButton type="button" onClick={handleSubmit}>
-            {existingEvent ? "Update Event" : "Create Event"}
-          </SubmitButton>
-        </Form>
+  <Input
+    type="text"
+    placeholder="Event Name *"
+    value={eventName}
+    onChange={(e) => setEventName(e.target.value)}
+  />
+  <Input
+    type="text"
+    placeholder="Description *"
+    value={eventDescription}
+    onChange={(e) => setEventDescription(e.target.value)}
+  />
+  <Input
+    type="date"
+    placeholder="Date *"
+    value={eventDate}
+    onChange={(e) => setEventDate(e.target.value)}
+  />
+  <Input
+    type="time"
+    placeholder="Time *"
+    value={eventTime}
+    onChange={(e) => setEventTime(e.target.value)}
+  />
+  <Input
+    type="text"
+    placeholder="Location *"
+    value={eventLocation}
+    onChange={(e) => setEventLocation(e.target.value)}
+  />
+  <Input
+    type="file"
+    placeholder="Poster"
+    onChange={(e) => handleFileChange(e, setEventPoster)}
+  />
+  <Input
+    type="file"
+    placeholder="Brochure"
+    onChange={(e) => handleFileChange(e, setEventBrochure)}
+  />
+  <Input
+    type="text"
+    placeholder="Registration Link"
+    value={registrationLink}
+    onChange={(e) => setRegistrationLink(e.target.value)}
+  />
+  <Input
+    type="text"
+    placeholder="Club Name *"
+    value={clubName}
+    onChange={(e) => setClubName(e.target.value)}
+  />
+  <Input
+    type="text"
+    placeholder="Duration *"
+    value={duration}
+    onChange={(e) => setDuration(e.target.value)}
+  />
+  <SubmitButton type="button" onClick={handleSubmit}>
+    {existingEvent ? "Update Event" : "Create Event"}
+  </SubmitButton>
+</Form>
+
       </ModalContent>
     </ModalOverlay>
   );

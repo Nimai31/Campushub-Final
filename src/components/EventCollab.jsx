@@ -6,6 +6,7 @@ import {
   addEventAPI,
   deleteEventAPI,
   updateEventAPI,
+  updateInterestedAPI,
 } from "../actions";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow, isAfter, parseISO } from "date-fns";
@@ -63,6 +64,8 @@ const EventCollab = (props) => {
     eventData.email = props.user.email;
     eventData.creator = props.user.email;
     eventData.timestamp = new Date().toISOString();
+    eventData.interested = eventData.interested ?? 0; 
+    eventData.interestedUsers = eventData.interestedUsers ?? []; 
 
     if (isEditing) {
       props.updateEvent(editingEvent.id, eventData);
@@ -119,6 +122,16 @@ const EventCollab = (props) => {
     return <Navigate to="/" />;
   }
 
+  const handleInterested = (event) => {
+    if (!event.interestedUsers.includes(props.user.email)) {
+      props.updateInterested(event.id, props.user.email);
+    }
+  };
+
+  const sortedEvents = filteredEvents.sort(
+    (a, b) => b.interested - a.interested
+  );
+
   return (
     <Container>
       <EventBox>
@@ -134,14 +147,14 @@ const EventCollab = (props) => {
           existingEvent={editingEvent}
         />
       </EventBox>
-      {filteredEvents.length === 0 ? (
+      {sortedEvents.length === 0 ? (
         <NoEventsMessage>There are no events</NoEventsMessage>
       ) : (
         <Content>
           {props.loading && (
             <img src="/images/spin-loader.svg" className="loading" alt="Loading" />
           )}
-          {filteredEvents
+          {sortedEvents
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
             .map((event) => (
               <Event key={event.id}>
@@ -185,16 +198,21 @@ const EventCollab = (props) => {
                         Register Here
                       </EventRegistrationLink>
                     )}
-                    {event.creator === props.user.email && (
-                      <Buttons>
-                        <EditButton onClick={() => handleEditEvent(event)}>
-                          Edit
-                        </EditButton>
-                        <DeleteButton onClick={() => handleDeleteEvent(event.id)}>
-                          Delete
-                        </DeleteButton>
-                      </Buttons>
-                    )}
+                    <Buttons>
+                  <InterestedButton onClick={() => handleInterested(event)}>
+                    Interested ({event.interested ?? 0})
+                  </InterestedButton>
+                  {event.creator === props.user.email && (
+                    <>
+                      <EditButton onClick={() => handleEditEvent(event)}>
+                        Edit
+                      </EditButton>
+                      <DeleteButton onClick={() => handleDeleteEvent(event.id)}>
+                        Delete
+                      </DeleteButton>
+                    </>
+                  )}
+                </Buttons>
                   </LeftSide>
                   <Divider />
                   {event.poster && (
@@ -441,6 +459,15 @@ const ZoomButton = styled.button`
   }
 `;
 
+const InterestedButton = styled.button`
+  padding: 5px 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+
 const ZoomModal = styled.div`
   position: fixed;
   top: 0;
@@ -479,6 +506,7 @@ const mapDispatchToProps = (dispatch) => ({
   deleteEvent: (eventId) => dispatch(deleteEventAPI(eventId)),
   updateEvent: (eventId, eventData) =>
     dispatch(updateEventAPI(eventId, eventData)),
+  updateInterested: (eventId, userEmail) => dispatch(updateInterestedAPI(eventId, userEmail)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EventCollab);

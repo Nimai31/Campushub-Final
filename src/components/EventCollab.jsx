@@ -104,7 +104,7 @@ const EventCollab = (props) => {
       <EventBox>
         {isAuthorized && (
           <CreateEventButton onClick={toggleEventForm}>
-            Create Event
+            Create  an Event
           </CreateEventButton>
         )}
         <EventModal

@@ -27,18 +27,7 @@ const EventCollab = (props) => {
       props.getEvents();
       checkAuthorization();
 
-      const now = new Date();
-      const nextMidnight = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1
-      );
-      const timeUntilMidnight = nextMidnight - now;
-      const midnightTimer = setTimeout(() => {
-        removePastEvents();
-        setInterval(removePastEvents, 24 * 60 * 60 * 1000); // Repeat every 24 hours
-      }, timeUntilMidnight);
-      return () => clearTimeout(midnightTimer);
+      
     }
   }, [props.user, props.getEvents]);
 
@@ -100,24 +89,6 @@ const EventCollab = (props) => {
     }
   };
 
-  const removePastEvents = () => {
-    const now = new Date();
-    props.events.forEach((event) => {
-      const eventDateTime = parseISO(event.date + "T" + event.time);
-      if (isAfter(now, eventDateTime)) {
-        props.deleteEvent(event.id);
-      }
-    });
-  };
-
-  const filteredEvents = props.events.filter((event) => {
-    const eventDateTime = parseISO(event.date + "T" + event.time);
-    return (
-      event.name.toLowerCase().includes(props.searchQuery.toLowerCase()) &&
-      isAfter(eventDateTime, new Date())
-    );
-  });
-
   if (!props.user) {
     return <Navigate to="/" />;
   }
@@ -127,10 +98,6 @@ const EventCollab = (props) => {
       props.updateInterested(event.id, props.user.email);
     }
   };
-
-  const sortedEvents = filteredEvents.sort(
-    (a, b) => b.interested - a.interested
-  );
 
   return (
     <Container>
@@ -147,15 +114,15 @@ const EventCollab = (props) => {
           existingEvent={editingEvent}
         />
       </EventBox>
-      {sortedEvents.length === 0 ? (
+      {props.events.length === 0 ? (
         <NoEventsMessage>There are no events</NoEventsMessage>
       ) : (
         <Content>
           {props.loading && (
             <img src="/images/spin-loader.svg" className="loading" alt="Loading" />
           )}
-          {sortedEvents
-            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+          {props.events
+            .sort((a, b) => b.interested - a.interested)
             .map((event) => (
               <Event key={event.id}>
                 <EventDetails>

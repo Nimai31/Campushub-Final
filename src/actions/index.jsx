@@ -585,17 +585,17 @@ export const deleteSkill = (email, skill) => {
 
 export const getEventsAPI = () => async (dispatch) => {
   try {
-    const snapshot = await db.collection("events").get();
-    const events = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const snapshot = await db.collection("events").get(); // Get all events
+    const events = [];
+    snapshot.forEach((doc) => {
+      events.push({ id: doc.id, ...doc.data() }); // Properly format each event
+    });
     dispatch({ type: GET_EVENTS, payload: events });
   } catch (error) {
+    console.error("Error fetching events:", error); // Log for debugging
     dispatch({ type: ERROR, error: error.message });
   }
 };
-
 // Add event
 export const addEventAPI = (eventData) => async (dispatch) => {
   try {

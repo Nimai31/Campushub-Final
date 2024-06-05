@@ -134,7 +134,7 @@ const Main = (props) => {
                     </a>
                     <button  onClick={() => handleDelete(article.id)}
                           disabled={props.user.email !== article.actor.description}>
-                      <img src="/images/delete.svg" alt="" />
+                      <img src="/images/bin.svg" alt="" />
                     </button>
                   </SharedActor>
                   <Description>{article.description}</Description>

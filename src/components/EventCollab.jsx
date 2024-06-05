@@ -9,7 +9,7 @@ import {
   updateInterestedAPI,
 } from "../actions";
 import { useNavigate } from "react-router-dom";
-import { formatDistanceToNow, isAfter, parseISO } from "date-fns";
+import { formatDistanceToNow} from "date-fns";
 import { Navigate } from "react-router-dom";
 import EventModal from "./EventModal";
 import db from "../firebase";

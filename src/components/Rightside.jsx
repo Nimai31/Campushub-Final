@@ -1,31 +1,27 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
 import { getEventsAPI } from "../actions";
 import { useNavigate } from "react-router-dom";
+import { connect } from "react-redux";
 
 const Rightside = (props) => {
-  const dispatch = useDispatch();
-  const events = useSelector((state) => state.eventState.events);
   const navigate = useNavigate();
   const [todayEvents, setTodayEvents] = useState([]);
 
   useEffect(() => {
-    dispatch(getEventsAPI());
-  }, [dispatch]);
+    if (props.user) {
+      props.getEvents();
+    }
+  }, [props.user, props.getEvents]);
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
-    console.log("Today's date:", today);
-    console.log("Fetched events:", events);
-    const filteredEvents = events.filter((event) => {
+    const filteredEvents = props.events.filter((event) => {
       const eventDate = new Date(event.date).toISOString().split("T")[0];
-      console.log("Event date:", eventDate);
       return eventDate === today;
     });
-    console.log("Filtered events for today:", filteredEvents);
     setTodayEvents(filteredEvents);
-  }, [events]);
+  }, [props.events]);
 
   const handleExploreEventClick = () => {
     navigate("/events");
@@ -148,4 +144,15 @@ const Recommendation = styled.a`
   }
 `;
 
-export default Rightside;
+const mapStateToProps = (state) => {
+  return {
+    events: state.eventState.events,
+    user: state.userState.user, // Add this to ensure user is properly passed
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  getEvents: () => dispatch(getEventsAPI()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Rightside);

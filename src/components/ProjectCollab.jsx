@@ -109,7 +109,7 @@ const ProjectCollab = (props) => {
     <Container>
       <ProjectBox>
         <button onClick={toggleProjectForm}>
-          Create Project
+          Create a Project
         </button>
         <Modal show={showProjectForm} onClose={resetForm}>
           <ProjectForm>

@@ -90,6 +90,7 @@ const Main = (props) => {
             <button
               onClick={handleClick}
               disabled={props.loading ? true : false}
+              className="clickable"
             >
               Start a post
             </button>
@@ -291,6 +292,10 @@ const Sharebox = styled(CommonCard)`
         }
       }
     }
+  }
+
+  .clickable{
+    cursor: pointer;
   }
 `;
 

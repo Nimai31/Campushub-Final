@@ -183,6 +183,10 @@ const CommunityCard = styled(ArtCard)`
       padding-bottom: 3px;
     }
 
+    img{
+      cursor: pointer;
+    }
+
     .dismore{
       border-top: none;
       align-items: left;

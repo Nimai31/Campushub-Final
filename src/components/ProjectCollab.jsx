@@ -269,7 +269,7 @@ const Content = styled.div`
 const Project = styled.div`
   margin: 30px 0;
   padding: 20px;
-  height: 480px;
+  min-height: 480px;
   background-color: #98c5e9;
   box-sizing: border-box;
   -moz-box-sizing: border-box;

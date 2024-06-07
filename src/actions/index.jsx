@@ -152,7 +152,7 @@ export function getUserAuth() {
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         dispatch(setUser(user));
-        dispatch(fetchUserDetails(user.email)); // Fetch user details if user is already authenticated
+        dispatch(fetchUserDetails(user.email)); 
       }
     });
   };
@@ -201,9 +201,9 @@ export function postArticleAPI(payload) {
             },
             video: payload.video,
             sharedImage: downloadUrl,
-            comments: [], // Initialize comments as an empty array
+            comments: [],
             description: payload.description,
-            likes: { count: 0, users: [] }, // Initialize likes field
+            likes: { count: 0, users: [] }, 
           });
           dispatch(setLoading(false));
         }
@@ -218,13 +218,13 @@ export function postArticleAPI(payload) {
         },
         video: payload.video,
         sharedImage: "",
-        comments: [], // Initialize comments as an empty array
+        comments: [], 
         description: payload.description,
-        likes: { count: 0, users: [] }, // Initialize likes field
+        likes: { count: 0, users: [] }, 
       });
       dispatch(setLoading(false));
     } else if (payload.description) {
-      // New condition for text-only posts
+      
       db.collection("articles").add({
         actor: {
           description: payload.user.email,
@@ -236,7 +236,7 @@ export function postArticleAPI(payload) {
         sharedImage: "",
         comments: [],
         description: payload.description,
-        likes: { count: 0, users: [] }, // Initialize likes field
+        likes: { count: 0, users: [] }, 
       });
 
       dispatch(setLoading(false));
@@ -277,7 +277,7 @@ export const updateArticleLikes = (articleId, userEmail) => {
         articleRef
           .update({ likes })
           .then(() => {
-            dispatch(getArticlesAPI()); // Refresh articles
+            dispatch(getArticlesAPI()); 
           })
           .catch((error) => {
             console.error("Error updating likes: ", error);
@@ -299,10 +299,10 @@ export function getArticlesAPI() {
       .orderBy("actor.date", "desc")
       .onSnapshot((snapshot) => {
         payload = snapshot.docs.map((doc) => ({
-          id: doc.id, // Include the document ID
+          id: doc.id, 
           ...doc.data(),
         }));
-        console.log(payload); // For debugging
+        console.log(payload); 
         dispatch(getArticles(payload));
       });
   };
@@ -585,14 +585,14 @@ export const deleteSkill = (email, skill) => {
 
 export const getEventsAPI = () => async (dispatch) => {
   try {
-    const snapshot = await db.collection("events").get(); // Get all events
+    const snapshot = await db.collection("events").get(); 
     const events = [];
     snapshot.forEach((doc) => {
-      events.push({ id: doc.id, ...doc.data() }); // Properly format each event
+      events.push({ id: doc.id, ...doc.data() }); 
     });
     dispatch({ type: GET_EVENTS, payload: events });
   } catch (error) {
-    console.error("Error fetching events:", error); // Log for debugging
+    console.error("Error fetching events:", error); 
     dispatch({ type: ERROR, error: error.message });
   }
 };

@@ -1,4 +1,4 @@
-// reducers/articleReducer.jsx
+
 
 import { GET_ARTICLES, SET_LOADING_STATUS, ADD_COMMENT, DELETE_ARTICLE } from "../actions/actionType";
 
